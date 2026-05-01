@@ -1,9 +1,20 @@
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { primaryNavigation, writeNavigation } from "@/config/routes";
 import { currentBuilder } from "@/data/current-builder";
 import styles from "./SidebarNav.module.css";
 
+function isActivePath(pathname: string | null, href: string) {
+  if (!pathname) {
+    return false;
+  }
+
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export function SidebarNav() {
+  const pathname = usePathname();
+
   return (
     <nav aria-label="주요 메뉴" className={styles.nav}>
       <div className={styles.brand}>
@@ -18,11 +29,20 @@ export function SidebarNav() {
         <Link href={currentBuilder.workspaceHref}>내 작업공간</Link>
       </section>
       <ul className={styles.list}>
-        {primaryNavigation.map((item) => (
-          <li key={item.href}>
-            <Link href={item.href}>{item.label}</Link>
-          </li>
-        ))}
+        {primaryNavigation.map((item) => {
+          const active = isActivePath(pathname, item.href);
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={active ? styles.active : undefined}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
       <div className={styles.writeBlock}>
         <p>바로 작성</p>

@@ -1,8 +1,18 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { AppShell } from "./AppShell";
+import { usePathname } from "next/navigation";
+
+vi.mock("next/navigation", () => ({
+  usePathname: vi.fn(),
+}));
+
+const mockedUsePathname = vi.mocked(usePathname);
 
 describe("AppShell", () => {
+  beforeEach(() => {
+    mockedUsePathname.mockReturnValue("/logs");
+  });
   it("renders primary navigation and main content", () => {
     render(
       <AppShell>
@@ -19,5 +29,6 @@ describe("AppShell", () => {
     expect(screen.getByText("빌더 A")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "내 작업공간" })).toHaveAttribute("href", "/builders/builder-a");
     expect(screen.getByRole("main")).toHaveTextContent("대시보드");
+    expect(screen.getByRole("link", { name: "빌드로그" })).toHaveAttribute("aria-current", "page");
   });
 });
