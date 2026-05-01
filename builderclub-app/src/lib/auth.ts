@@ -1,4 +1,5 @@
-import { auth } from "@/lib/auth-config";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth-config";
 import { getBuilderByHandle } from "@/lib/mock-db";
 import type { Builder } from "@/lib/data-model";
 
@@ -10,12 +11,13 @@ export type SessionBuilder = Builder & {
 
 export async function getSessionBuilder(): Promise<SessionBuilder | null> {
   try {
-    const session = await auth();
-    if (!session?.user?.handle) {
+    const session = await getServerSession(authOptions);
+    const handle = (session?.user as any)?.handle;
+    if (!handle) {
       return null;
     }
 
-    const builder = getBuilderByHandle(session.user.handle as string);
+    const builder = getBuilderByHandle(handle as string);
     if (!builder) {
       return null;
     }

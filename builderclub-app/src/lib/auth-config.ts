@@ -1,8 +1,9 @@
-import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { supabase } from "@/lib/supabase";
+import { getBuilderByHandle } from "@/lib/mock-db";
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -18,29 +19,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const email = credentials.email as string;
         const password = credentials.password as string;
 
-        // For now, simple check - in production, hash passwords
-        // Assume builders table has email and password_hash columns
-        const { data: builder, error } = await supabase
-          .from('builders')
-          .select('*')
-          .eq('email', email)
-          .single();
+        if (supabase) {
+          const { data: builder, error } = await supabase
+            .from('builders')
+            .select('*')
+            .eq('email', email)
+            .single();
 
-        if (error || !builder) {
+          if (error || !builder) {
+            return null;
+          }
+
+          if (builder.password_hash === password) {
+            return {
+              id: builder.id,
+              email: builder.email,
+              name: builder.display_name,
+              handle: builder.handle,
+            };
+          }
+
           return null;
         }
 
-        // Simple password check - replace with proper hashing
-        if (builder.password_hash === password) {
-          return {
-            id: builder.id,
-            email: builder.email,
-            name: builder.display_name,
-            handle: builder.handle,
-          };
+        const builder = getBuilderByHandle("builder-a");
+        if (!builder || email !== "builder-a@builderclub.local" || password !== "password") {
+          return null;
         }
 
-        return null;
+        return {
+          id: builder.id,
+          email,
+          name: builder.display_name,
+          handle: builder.handle,
+        };
       },
     }),
   ],
@@ -61,4 +73,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-});
+};

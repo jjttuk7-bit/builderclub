@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth-config";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth-config";
 
 const protectedPrefixes = [
   "/dashboard",
@@ -13,7 +14,7 @@ const protectedPrefixes = [
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const session = await auth();
+  const session = await getServerSession(authOptions);
 
   if (pathname === "/login" && session) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
