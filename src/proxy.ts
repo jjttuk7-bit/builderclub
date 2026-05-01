@@ -10,7 +10,7 @@ const protectedPrefixes = [
   "/knowledge",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const session = request.cookies.get("builderclub_session")?.value;
 

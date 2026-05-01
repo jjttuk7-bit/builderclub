@@ -1,8 +1,20 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { primaryNavigation, writeNavigation } from "@/config/routes";
-import { currentBuilder } from "@/data/current-builder";
 import styles from "./SidebarNav.module.css";
+
+type SidebarBuilder = {
+  name: string;
+  role?: string;
+  workspaceHref?: string;
+};
+
+type SidebarNavProps = {
+  builder?: SidebarBuilder;
+};
 
 function isActivePath(pathname: string | null, href: string) {
   if (!pathname) {
@@ -12,8 +24,39 @@ function isActivePath(pathname: string | null, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function SidebarNav() {
+export function SidebarNav({ builder }: SidebarNavProps) {
   const pathname = usePathname();
+  const [currentBuilder, setCurrentBuilder] = useState<SidebarBuilder>(
+    builder ?? {
+      name: "빌더 A",
+      role: "클럽 멤버",
+      workspaceHref: "/builders/builder-a",
+    }
+  );
+
+  useEffect(() => {
+    async function loadSession() {
+      try {
+        const response = await fetch("/api/session");
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        if (data?.name) {
+          setCurrentBuilder({
+            name: data.name,
+            role: data.role ?? "클럽 멤버",
+            workspaceHref: data.workspaceHref ?? "/builders/builder-a",
+          });
+        }
+      } catch {
+        // ignore fetch errors and keep fallback builder
+      }
+    }
+
+    loadSession();
+  }, []);
 
   return (
     <nav aria-label="주요 메뉴" className={styles.nav}>
@@ -26,7 +69,7 @@ export function SidebarNav() {
         <span>로그인 중</span>
         <strong>{currentBuilder.name}</strong>
         <small>{currentBuilder.role}</small>
-        <Link href={currentBuilder.workspaceHref}>내 작업공간</Link>
+        <Link href={currentBuilder.workspaceHref ?? "/builders/builder-a"}>내 작업공간</Link>
       </section>
       <ul className={styles.list}>
         {primaryNavigation.map((item) => {

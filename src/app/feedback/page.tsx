@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { sampleFeedbackRequests } from "@/data/sample-content";
+import { getFeedbackRequests } from "@/lib/mock-db";
+
+const feedbackRequests = getFeedbackRequests();
 
 export default function FeedbackPage() {
   return (
@@ -14,7 +16,7 @@ export default function FeedbackPage() {
       <CardSection
         title="피드백 요청"
         description="확인받고 싶은 화면, 관점, 반영 상태를 한곳에서 봅니다."
-        items={sampleFeedbackRequests}
+        items={feedbackRequests}
       />
     </AppShell>
   );

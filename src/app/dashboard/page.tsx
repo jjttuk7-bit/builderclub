@@ -1,8 +1,10 @@
 import { ContentCard } from "@/components/cards/ContentCard";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { sampleActivities } from "@/data/sample-content";
+import { getActivityFeed } from "@/lib/mock-db";
 import styles from "./page.module.css";
+
+const activities = getActivityFeed();
 
 export default function DashboardPage() {
   return (
@@ -20,7 +22,7 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className={styles.cardGrid}>
-          {sampleActivities.map((activity) => (
+          {activities.map((activity) => (
             <ContentCard
               key={activity.href}
               title={activity.title}

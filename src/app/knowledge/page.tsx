@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { sampleKnowledgePosts } from "@/data/sample-content";
+import { getKnowledgePosts } from "@/lib/mock-db";
+
+const knowledgePosts = getKnowledgePosts();
 
 export default function KnowledgePage() {
   return (
@@ -14,7 +16,7 @@ export default function KnowledgePage() {
       <CardSection
         title="공유된 노하우"
         description="질문과 빌드로그에서 정리된 재사용 가능한 지식을 모았습니다."
-        items={sampleKnowledgePosts}
+        items={knowledgePosts}
       />
     </AppShell>
   );

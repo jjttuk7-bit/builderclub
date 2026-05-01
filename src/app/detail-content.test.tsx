@@ -7,7 +7,7 @@ import QuestionDetailPage from "./questions/[id]/page";
 
 describe("detail pages with sample content", () => {
   it("renders build log detail content and conversion actions", () => {
-    render(<LogDetailPage />);
+    render(<LogDetailPage params={{ id: "log-1" }} />);
 
     expect(screen.getByText("로그인 화면 플로우 정리")).toBeInTheDocument();
     expect(screen.getByText("오늘 작업한 것")).toBeInTheDocument();
@@ -16,7 +16,7 @@ describe("detail pages with sample content", () => {
   });
 
   it("renders question detail content and answers", () => {
-    render(<QuestionDetailPage />);
+    render(<QuestionDetailPage params={{ id: "question-1" }} />);
 
     expect(screen.getByText("Supabase RLS 정책이 예상보다 넓게 열립니다")).toBeInTheDocument();
     expect(screen.getByText("막힌 상황")).toBeInTheDocument();
@@ -25,7 +25,7 @@ describe("detail pages with sample content", () => {
   });
 
   it("renders feedback detail content and comments", () => {
-    render(<FeedbackDetailPage />);
+    render(<FeedbackDetailPage params={{ id: "feedback-1" }} />);
 
     expect(screen.getByText("빌더룸 첫 화면 피드백 요청")).toBeInTheDocument();
     expect(screen.getByText("확인받고 싶은 관점")).toBeInTheDocument();
@@ -34,7 +34,7 @@ describe("detail pages with sample content", () => {
   });
 
   it("renders knowledge detail content and reuse tips", () => {
-    render(<KnowledgeDetailPage />);
+    render(<KnowledgeDetailPage params={{ id: "knowledge-1" }} />);
 
     expect(screen.getByText("Claude Code에게 화면 구조를 맡길 때 좋은 요청 방식")).toBeInTheDocument();
     expect(screen.getByText("핵심 내용")).toBeInTheDocument();

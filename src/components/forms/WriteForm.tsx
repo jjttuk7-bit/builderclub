@@ -13,11 +13,14 @@ type WriteFormProps = {
   description: string;
   fields: readonly WriteFormField[];
   submitLabel: string;
+  action?: (formData: FormData) => Promise<void>;
+  builderName?: string;
 };
 
-export function WriteForm({ title, description, fields, submitLabel }: WriteFormProps) {
+export function WriteForm({ title, description, fields, submitLabel, action, builderName }: WriteFormProps) {
+  const displayName = builderName ?? currentBuilder.name;
   return (
-    <form className={styles.form}>
+    <form className={styles.form} action={action}>
       <header className={styles.header}>
         <h2>{title}</h2>
         <p>{description}</p>
@@ -26,7 +29,7 @@ export function WriteForm({ title, description, fields, submitLabel }: WriteForm
       <section className={styles.ownerGrid} aria-label="작성 소유자 정보">
         <div>
           <span>작성자</span>
-          <strong>{currentBuilder.name}</strong>
+          <strong>{displayName}</strong>
         </div>
         <div>
           <span>저장 위치</span>
@@ -91,7 +94,7 @@ export function WriteForm({ title, description, fields, submitLabel }: WriteForm
             <option value="public">public</option>
           </select>
         </label>
-        <button type="button">{submitLabel}</button>
+        <button type="submit">{submitLabel}</button>
       </footer>
     </form>
   );

@@ -9,9 +9,9 @@ import QuestionsPage from "./questions/page";
 
 describe("section pages with sample content", () => {
   it("renders builder room sample workspace details", () => {
-    render(<BuilderRoomPage />);
+    render(<BuilderRoomPage params={{ handle: "builder-a" }} />);
     expect(screen.getByText("오늘의 작업 초점")).toBeInTheDocument();
-    expect(screen.getByText("빌더 A의 노코드 CRM")).toBeInTheDocument();
+    expect(screen.getByText("빌더 A의 작업 공간")).toBeInTheDocument();
     expect(
       screen.getAllByRole("link", { name: "빌드로그 작성" }).some((link) => link.getAttribute("href") === "/logs/new"),
     ).toBe(true);

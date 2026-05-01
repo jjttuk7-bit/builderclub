@@ -1,5 +1,6 @@
 export const sampleActivities = [
   {
+    id: "activity-1",
     title: "빌더 A가 빌드로그를 공유했습니다",
     summary: "로그인 화면의 사용자 흐름을 정리하고 다음 작업을 남겼습니다.",
     href: "/logs/log-1",
@@ -19,6 +20,7 @@ export const sampleActivities = [
 
 export const sampleProjects = [
   {
+    id: "project-1",
     title: "노코드 CRM 리빌드",
     summary: "고객 메모, 후속 연락, 상태 변경을 한 화면에서 처리하는 빌더 A의 핵심 프로젝트입니다.",
     href: "/builders/builder-a",
@@ -38,6 +40,7 @@ export const sampleProjects = [
 
 export const sampleLogs = [
   {
+    id: "log-1",
     title: "로그인 화면 플로우 정리",
     summary: "첫 진입, 인증 실패, 재시도, 대시보드 이동까지 사용자 흐름을 빌드로그로 남겼습니다.",
     href: "/logs/log-1",
@@ -57,6 +60,7 @@ export const sampleLogs = [
 
 export const sampleQuestions = [
   {
+    id: "question-1",
     title: "Supabase RLS 정책이 예상보다 넓게 열립니다",
     summary: "빌더룸 비공개 기록이 클럽 공개 목록에 섞일 수 있는지 권한 조건을 검토하고 있습니다.",
     href: "/questions/question-1",
@@ -76,6 +80,7 @@ export const sampleQuestions = [
 
 export const sampleFeedbackRequests = [
   {
+    id: "feedback-1",
     title: "빌더룸 첫 화면 피드백 요청",
     summary: "개인 작업 공간에서 오늘 작업과 다음 액션이 충분히 먼저 보이는지 확인받고 싶습니다.",
     href: "/feedback/feedback-1",
@@ -95,6 +100,7 @@ export const sampleFeedbackRequests = [
 
 export const sampleKnowledgePosts = [
   {
+    id: "knowledge-1",
     title: "Claude Code에게 화면 구조를 맡길 때 좋은 요청 방식",
     summary: "랜딩 설명 대신 대시보드 구조를 먼저 요청하면 실제 앱 설계가 빨라지는 패턴을 정리했습니다.",
     href: "/knowledge/knowledge-1",
@@ -113,6 +119,7 @@ export const sampleKnowledgePosts = [
 ];
 
 export const sampleBuilderWorkspace = {
+  handle: "builder-a",
   name: "빌더 A의 노코드 CRM",
   focus: "오늘의 작업 초점",
   summary: "로그인 이후 첫 화면에서 고객 상태, 다음 연락, 최근 피드백을 한 번에 볼 수 있게 정리합니다.",
@@ -124,6 +131,7 @@ export const sampleBuilderWorkspace = {
 };
 
 export const sampleLogDetail = {
+  id: "log-1",
   title: "로그인 화면 플로우 정리",
   status: "shared",
   builder: "빌더 A",
@@ -146,6 +154,7 @@ export const sampleLogDetail = {
 };
 
 export const sampleQuestionDetail = {
+  id: "question-1",
   title: "Supabase RLS 정책이 예상보다 넓게 열립니다",
   status: "open",
   builder: "빌더 B",
@@ -168,6 +177,7 @@ export const sampleQuestionDetail = {
 };
 
 export const sampleFeedbackDetail = {
+  id: "feedback-1",
   title: "빌더룸 첫 화면 피드백 요청",
   status: "in_review",
   builder: "빌더 A",
@@ -190,6 +200,7 @@ export const sampleFeedbackDetail = {
 };
 
 export const sampleKnowledgeDetail = {
+  id: "knowledge-1",
   title: "Claude Code에게 화면 구조를 맡길 때 좋은 요청 방식",
   status: "published",
   builder: "빌더 C",

@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { sampleProjects } from "@/data/sample-content";
+import { getProjects } from "@/lib/mock-db";
+
+const projects = getProjects();
 
 export default function ProjectsPage() {
   return (
@@ -14,7 +16,7 @@ export default function ProjectsPage() {
       <CardSection
         title="진행 중인 프로젝트"
         description="각 빌더가 만들고 있는 프로젝트와 현재 상태를 빠르게 훑어봅니다."
-        items={sampleProjects}
+        items={projects}
       />
     </AppShell>
   );

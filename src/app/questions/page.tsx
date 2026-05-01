@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { sampleQuestions } from "@/data/sample-content";
+import { getQuestions } from "@/lib/mock-db";
+
+const questions = getQuestions();
 
 export default function QuestionsPage() {
   return (
@@ -14,7 +16,7 @@ export default function QuestionsPage() {
       <CardSection
         title="열린 질문"
         description="지금 막힌 문제와 답변이 필요한 질문을 모았습니다."
-        items={sampleQuestions}
+        items={questions}
       />
     </AppShell>
   );

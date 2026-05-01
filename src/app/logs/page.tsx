@@ -1,7 +1,9 @@
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { sampleLogs } from "@/data/sample-content";
+import { getBuildLogs } from "@/lib/mock-db";
+
+const buildLogs = getBuildLogs();
 
 export default function LogsPage() {
   return (
@@ -14,7 +16,7 @@ export default function LogsPage() {
       <CardSection
         title="최근 빌드로그"
         description="작업 과정, 막힌 부분, 해결 방식이 다음 빌더의 힌트가 됩니다."
-        items={sampleLogs}
+        items={buildLogs}
       />
     </AppShell>
   );
