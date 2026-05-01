@@ -1,0 +1,13 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border: 1px solid rgba(47, 118, 86, 0.22);
+  border-radius: 999px;
+  background: rgba(237, 243, 239, 0.92);
+  padding: 3px 9px;
+  color: var(--green-dark);
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
