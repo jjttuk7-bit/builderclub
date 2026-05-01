@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 피드백 요청 작성 화면입니다.">
+    <title>피드백 요청 작성 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .write-feedback {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions,
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--amber);
+            background: var(--amber);
+            color: #fffefa;
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(280px, 0.36fr);
+            gap: 18px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+
+        .head-panel,
+        .context-card,
+        .form-panel,
+        .side-panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .head-panel {
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--amber);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .head-panel p {
+            max-width: 720px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .context-card {
+            display: grid;
+            align-content: center;
+            gap: 10px;
+            padding: 18px;
+        }
+
+        .context-card span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .context-card strong {
+            display: block;
+            font-size: 1.08rem;
+            line-height: 1.28;
+        }
+
+        .status-note {
+            border: 1px solid rgba(169, 120, 19, 0.22);
+            border-radius: var(--radius);
+            background: #fff7e5;
+            padding: 10px;
+            color: #5f4b20;
+            font-size: 0.86rem;
+            font-weight: 720;
+        }
+
+        .write-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.38fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .form-panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .feedback-form {
+            display: grid;
+            gap: 16px;
+            padding: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field.wide {
+            grid-column: 1 / -1;
+        }
+
+        label,
+        legend {
+            color: #2f3b36;
+            font-size: 0.9rem;
+            font-weight: 950;
+        }
+
+        .hint {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            font-weight: 680;
+        }
+
+        input,
+        select {
+            min-height: 44px;
+            padding: 0 12px;
+        }
+
+        textarea {
+            min-height: 144px;
+            resize: vertical;
+            padding: 12px;
+            line-height: 1.6;
+        }
+
+        fieldset {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .radio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .radio-grid label {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            align-items: start;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #f8faf7;
+            padding: 10px;
+            font-size: 0.84rem;
+            line-height: 1.35;
+        }
+
+        .radio-grid input {
+            width: 18px;
+            min-width: 18px;
+            height: 18px;
+            min-height: 18px;
+            margin-top: 2px;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-panel {
+            overflow: hidden;
+        }
+
+        .side-body {
+            padding: 16px;
+        }
+
+        .check-list,
+        .focus-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .check-list li,
+        .focus-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+            color: #52605a;
+            font-size: 0.88rem;
+            font-weight: 680;
+        }
+
+        .check-list strong,
+        .focus-list strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--ink);
+        }
+
+        .focus-list span {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        @media (max-width: 980px) {
+            .page-head,
+            .write-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .write-feedback {
+                width: min(100% - 24px, 1180px);
+                padding-top: 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+
+            .form-grid,
+            .radio-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                justify-content: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="write-feedback" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Feedback Request</span>
+            </a>
+            <nav class="top-actions" aria-label="피드백 요청 화면 이동">
+                <a class="button" href="builder-room.html">빌더룸으로 돌아가기</a>
+                <a class="button" href="feedback-list.html">피드백 요청 목록</a>
+                <a class="button primary" href="#feedback-form">피드백 요청 작성</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="feedback-title">
+            <div class="head-panel">
+                <p class="kicker">User Perspective Review</p>
+                <h1 id="feedback-title">피드백 요청 작성</h1>
+                <p>만든 화면이나 흐름을 다른 빌더가 사용자 관점에서 확인할 수 있도록 요청 범위와 관점을 분명히 남깁니다.</p>
+            </div>
+            <aside class="context-card" aria-label="피드백 요청 맥락">
+                <span>연결된 작업실</span>
+                <strong>빌더 A · AI 업무 자동화 도구</strong>
+                <div class="status-note">첫 사용자가 무엇을 해야 하는지 보이는지 확인받는 요청입니다.</div>
+            </aside>
+        </section>
+
+        <div class="write-layout">
+            <section class="form-panel" aria-labelledby="form-title">
+                <div class="panel-header">
+                    <h2 id="form-title">요청 내용</h2>
+                </div>
+
+                <form class="feedback-form" id="feedback-form" action="dashboard.html#feedback" method="get">
+                    <div class="form-grid">
+                        <div class="field wide">
+                            <label for="title">피드백 요청 제목</label>
+                            <input id="title" name="title" type="text" value="반복 업무 체크리스트 첫 화면이 바로 이해되는지 봐주세요">
+                            <p class="hint">검토자가 무엇을 봐야 하는지 제목에서 드러나게 씁니다.</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="project">관련 프로젝트</label>
+                            <select id="project" name="project">
+                                <option>AI 업무 자동화 도구</option>
+                                <option>소규모 모임 랜딩 빌더</option>
+                                <option>개인 지식 아카이브</option>
+                                <option>예약 경험 개선 도구</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="due-date">마감일</label>
+                            <input id="due-date" name="due_date" type="date" value="2026-05-03">
+                        </div>
+
+                        <div class="field wide">
+                            <label for="screen-link">보고 싶은 화면 / 링크</label>
+                            <input id="screen-link" name="screen_link" type="url" value="https://example.com/builder-a/checklist-draft">
+                            <p class="hint">정적 시안, 캡처 링크, 배포 URL, 문서 링크 모두 가능합니다.</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="current-status">현재 상태</label>
+                            <textarea id="current-status" name="current_status">첫 화면 입력 폼과 체크리스트 결과 화면의 와이어프레임을 만든 상태입니다. 실제 저장 기능은 아직 없습니다.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="review-focus">확인받고 싶은 관점</label>
+                            <textarea id="review-focus" name="review_focus">처음 보는 사용자가 반복 업무를 입력하면 무엇이 만들어지는지 바로 이해되는지 확인받고 싶습니다.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="user-action">사용자가 해야 할 행동</label>
+                            <textarea id="user-action" name="user_action">사용자는 업무 이름, 반복 주기, 확인 항목을 입력한 뒤 체크리스트 생성 버튼을 눌러야 합니다.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="specific-points">특별히 봐줬으면 하는 부분</label>
+                            <textarea id="specific-points" name="specific_points">CTA 문구가 충분히 명확한지, 입력 필드 이름이 어렵지 않은지, 결과 화면이 기대와 맞는지 봐주세요.</textarea>
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend>공유 범위</legend>
+                        <div class="radio-grid">
+                            <label><input type="radio" name="scope" value="room"> 빌더룸에만 보관</label>
+                            <label><input type="radio" name="scope" value="club" checked> 빌더클럽 피드백 요청</label>
+                            <label><input type="radio" name="scope" value="archive"> 회고에 연결</label>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <a class="button" href="builder-room.html">임시저장</a>
+                        <button class="button primary" type="submit">피드백 요청 등록</button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="side-stack">
+                <section class="side-panel" aria-labelledby="check-title">
+                    <div class="panel-header">
+                        <h2 id="check-title">요청 체크</h2>
+                    </div>
+                    <div class="side-body">
+                        <ul class="check-list">
+                            <li><strong>관점이 분명한가</strong>문구, 화면 흐름, 기능 필요성 중 무엇을 봐야 하는지 정합니다.</li>
+                            <li><strong>사용자 행동이 있는가</strong>검토자가 실제 사용자의 다음 행동을 상상할 수 있어야 합니다.</li>
+                            <li><strong>마감이 있는가</strong>언제까지 의견이 필요한지 적어야 피드백이 움직입니다.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="side-panel" aria-labelledby="focus-title">
+                    <div class="panel-header">
+                        <h2 id="focus-title">피드백 관점</h2>
+                    </div>
+                    <div class="side-body">
+                        <ul class="focus-list">
+                            <li><strong>이해도</strong><span>처음 봐도 목적과 다음 행동이 보이는가</span></li>
+                            <li><strong>필요성</strong><span>사용자에게 실제로 필요한 기능인가</span></li>
+                            <li><strong>흐름</strong><span>입력, 확인, 결과 순서가 자연스러운가</span></li>
+                            <li><strong>문구</strong><span>버튼과 안내 문장이 부담 없이 읽히는가</span></li>
+                        </ul>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

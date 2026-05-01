@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 프로젝트 목록 화면입니다.">
+    <title>프로젝트 목록 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .projects-list {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+            color: #fffefa;
+        }
+
+        .page-head,
+        .filter-panel,
+        .panel,
+        .project-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: end;
+            margin-bottom: 18px;
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--green-dark);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .page-head p {
+            max-width: 760px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .page-stat {
+            min-width: 174px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #eef7f0;
+            padding: 14px;
+        }
+
+        .page-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .page-stat strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .filter-panel {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) 160px 170px 170px;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #2f3b36;
+            font-size: 0.84rem;
+            font-weight: 950;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            padding: 0 12px;
+            font-weight: 680;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 850;
+        }
+
+        .card-list {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .project-card {
+            box-shadow: 0 10px 24px rgba(34, 43, 38, 0.06);
+            padding: 16px;
+        }
+
+        .project-card h3 {
+            margin-bottom: 7px;
+            font-size: 1.12rem;
+            line-height: 1.35;
+        }
+
+        .project-card p,
+        .project-block span {
+            color: #52605a;
+            font-size: 0.92rem;
+            font-weight: 660;
+        }
+
+        .card-top,
+        .card-meta,
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-top {
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .badge,
+        .tag {
+            display: inline-flex;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #f5f7f4;
+            padding: 3px 8px;
+            color: #47524d;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .badge.plan {
+            background: #eef4fb;
+            color: var(--blue);
+        }
+
+        .badge.build {
+            background: #f8eee8;
+            color: var(--clay);
+        }
+
+        .badge.feedback {
+            background: #fff7e5;
+            color: var(--amber);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .project-block {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 11px;
+        }
+
+        .project-block strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #2f3b36;
+            font-size: 0.84rem;
+        }
+
+        .progress {
+            height: 10px;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #e6ece7;
+            overflow: hidden;
+        }
+
+        .progress i {
+            display: block;
+            width: var(--value);
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+        }
+
+        .card-meta {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 16px;
+            list-style: none;
+        }
+
+        .side-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+        }
+
+        .side-list strong {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.35;
+        }
+
+        .side-list span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 760;
+        }
+
+        @media (max-width: 1040px) {
+            .filter-panel,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .projects-list {
+                width: min(100% - 24px, 1240px);
+                padding-top: 16px;
+            }
+
+            .topbar,
+            .page-head {
+                align-items: flex-start;
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="projects-list" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Project Board</span>
+            </a>
+            <nav class="top-actions" aria-label="프로젝트 목록 이동">
+                <a class="button" href="dashboard.html">공용 대시보드</a>
+                <a class="button primary" href="builder-room.html">빌더룸 열기</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="projects-list-title">
+            <div>
+                <p class="kicker">Projects</p>
+                <h1 id="projects-list-title">프로젝트 목록</h1>
+                <p>빌더들이 만들고 있는 프로젝트의 목표, 진행률, 최근 빌드로그, 필요한 도움을 한눈에 확인합니다.</p>
+            </div>
+            <div class="page-stat" aria-label="프로젝트 통계">
+                <span>진행 중</span>
+                <strong>12</strong>
+            </div>
+        </section>
+
+        <section class="filter-panel" aria-label="프로젝트 목록 필터">
+            <div class="field">
+                <label for="project-search">상단 검색</label>
+                <input id="project-search" type="search" placeholder="프로젝트, 빌더, 목표, 도움 요청 검색">
+            </div>
+            <div class="field">
+                <label for="builder-filter">빌더 필터</label>
+                <select id="builder-filter">
+                    <option>전체 빌더</option>
+                    <option>빌더 A</option>
+                    <option>빌더 B</option>
+                    <option>빌더 C</option>
+                    <option>빌더 D</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="status-filter">상태 필터</label>
+                <select id="status-filter">
+                    <option>전체 상태</option>
+                    <option>기획 중</option>
+                    <option>개발 중</option>
+                    <option>피드백 요청</option>
+                    <option>회고 작성</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="progress-filter">진행률 필터</label>
+                <select id="progress-filter">
+                    <option>전체 진행률</option>
+                    <option>0-30%</option>
+                    <option>31-60%</option>
+                    <option>61-90%</option>
+                    <option>완료</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel" aria-labelledby="cards-title">
+                <div class="panel-header">
+                    <h2 id="cards-title">프로젝트 카드</h2>
+                    <span>빌더별 진행 현황</span>
+                </div>
+                <div class="card-list">
+                    <article class="project-card">
+                        <div class="card-top">
+                            <span class="badge plan">빌더 A</span>
+                            <span class="badge">기획 중</span>
+                        </div>
+                        <h3>AI 업무 자동화 도구</h3>
+                        <p>반복되는 운영 업무를 체크리스트로 바꿔 비개발자도 관리할 수 있게 만드는 도구입니다.</p>
+                        <div class="progress" aria-label="AI 업무 자동화 도구 40퍼센트 진행"><i style="--value: 40%"></i></div>
+                        <div class="project-grid">
+                            <div class="project-block"><strong>최근 빌드로그</strong><span>첫 버전 범위를 반복 업무 체크리스트 생성으로 줄였습니다.</span></div>
+                            <div class="project-block"><strong>필요한 도움</strong><span>첫 화면에서 사용자가 무엇을 해야 하는지 피드백이 필요합니다.</span></div>
+                        </div>
+                        <div class="tag-row">
+                            <span class="tag">MVP</span>
+                            <span class="tag">자동화</span>
+                            <span class="tag">피드백 필요</span>
+                        </div>
+                        <div class="card-meta"><a href="builder-room.html">빌더룸 보기</a><span>최근 업데이트 오늘</span></div>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="card-top">
+                            <span class="badge build">빌더 B</span>
+                            <span class="badge">개발 중</span>
+                        </div>
+                        <h3>소규모 모임 랜딩 빌더</h3>
+                        <p>운영자가 간단한 정보만 입력해 모임 소개 페이지를 만들 수 있는 랜딩 생성 도구입니다.</p>
+                        <div class="progress" aria-label="소규모 모임 랜딩 빌더 55퍼센트 진행"><i style="--value: 55%"></i></div>
+                        <div class="project-grid">
+                            <div class="project-block"><strong>최근 빌드로그</strong><span>CTA 문구와 모바일 접힘 구조를 다시 정리했습니다.</span></div>
+                            <div class="project-block"><strong>필요한 도움</strong><span>모바일 첫 화면의 버튼 우선순위 검토가 필요합니다.</span></div>
+                        </div>
+                        <div class="tag-row">
+                            <span class="tag">랜딩</span>
+                            <span class="tag">모바일</span>
+                            <span class="tag">CTA</span>
+                        </div>
+                        <div class="card-meta"><a href="builder-room.html">빌더룸 보기</a><span>최근 업데이트 어제</span></div>
+                    </article>
+
+                    <article class="project-card">
+                        <div class="card-top">
+                            <span class="badge feedback">빌더 D</span>
+                            <span class="badge">피드백 요청</span>
+                        </div>
+                        <h3>예약 경험 개선 도구</h3>
+                        <p>예약 완료 이후 사용자가 확인해야 할 정보와 다음 행동을 명확하게 정리하는 화면 개선 프로젝트입니다.</p>
+                        <div class="progress" aria-label="예약 경험 개선 도구 72퍼센트 진행"><i style="--value: 72%"></i></div>
+                        <div class="project-grid">
+                            <div class="project-block"><strong>최근 빌드로그</strong><span>예약 완료 화면의 안내 문구와 보조 액션을 줄였습니다.</span></div>
+                            <div class="project-block"><strong>필요한 도움</strong><span>안심감과 다음 행동이 충분히 보이는지 확인이 필요합니다.</span></div>
+                        </div>
+                        <div class="tag-row">
+                            <span class="tag">예약</span>
+                            <span class="tag">UX 문구</span>
+                            <span class="tag">완료 화면</span>
+                        </div>
+                        <div class="card-meta"><a href="builder-room.html">빌더룸 보기</a><span>최근 업데이트 2일 전</span></div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="side-stack">
+                <section class="panel" aria-labelledby="active-title">
+                    <div class="panel-header">
+                        <h2 id="active-title">활발한 빌더</h2>
+                        <span>이번 주</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>빌더 A</strong><span>빌드로그 4개 · 질문 1개 · 피드백 요청 1개</span></li>
+                        <li><strong>빌더 B</strong><span>빌드로그 3개 · 피드백 댓글 5개</span></li>
+                        <li><strong>빌더 C</strong><span>지식 공유 2개 · 질문 2개</span></li>
+                    </ul>
+                </section>
+
+                <section class="panel" aria-labelledby="help-title">
+                    <div class="panel-header">
+                        <h2 id="help-title">필요한 도움</h2>
+                        <span>대기 중</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>첫 화면 이해도 피드백</strong><span>AI 업무 자동화 도구 · 빌더 A</span></li>
+                        <li><strong>모바일 CTA 우선순위</strong><span>소규모 모임 랜딩 빌더 · 빌더 B</span></li>
+                        <li><strong>태그 이름 직관성</strong><span>개인 지식 아카이브 · 빌더 C</span></li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

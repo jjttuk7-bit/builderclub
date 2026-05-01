@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 빌더별 개인 작업실 상세 화면입니다.">
+    <title>빌더 A의 작업실 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f6f4ee;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .room-dashboard {
+            width: min(1220px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+            color: #fffefa;
+        }
+
+        .room-hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+
+        .profile-panel,
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .profile-panel {
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--green-dark);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            max-width: 760px;
+            margin-bottom: 12px;
+            font-size: clamp(2.4rem, 5vw, 5rem);
+            line-height: 0.98;
+        }
+
+        .profile-copy {
+            max-width: 760px;
+            margin-bottom: 24px;
+            color: #52605a;
+            font-size: 1rem;
+            font-weight: 680;
+        }
+
+        .profile-meta {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .meta-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #f7fbf7;
+            padding: 13px;
+        }
+
+        .meta-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.72rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .meta-card strong {
+            display: block;
+            margin-top: 5px;
+            line-height: 1.25;
+        }
+
+        .status-panel {
+            display: grid;
+            gap: 14px;
+            padding: 20px;
+        }
+
+        .status-panel h2 {
+            margin-bottom: 0;
+            font-size: 1.55rem;
+        }
+
+        .progress {
+            height: 10px;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #e6ece7;
+            overflow: hidden;
+        }
+
+        .progress i {
+            display: block;
+            width: var(--value);
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+        }
+
+        .status-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .status-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+        }
+
+        .status-list strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .status-list span {
+            color: var(--muted);
+            font-size: 0.86rem;
+            font-weight: 720;
+        }
+
+        .room-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.43fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .record-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .record-card {
+            min-height: 188px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 16px;
+            box-shadow: 0 10px 24px rgba(34, 43, 38, 0.06);
+        }
+
+        .record-card.wide {
+            grid-column: 1 / -1;
+        }
+
+        .record-card h2 {
+            margin-bottom: 10px;
+            font-size: 1.35rem;
+            line-height: 1.1;
+        }
+
+        .record-card p,
+        .record-card li {
+            color: #52605a;
+            font-size: 0.94rem;
+            font-weight: 660;
+        }
+
+        .record-card p:last-child {
+            margin-bottom: 0;
+        }
+
+        .record-card ul {
+            display: grid;
+            gap: 8px;
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .prompt-box {
+            border: 1px solid #cfd8d0;
+            border-radius: var(--radius);
+            background: #f3f7f3;
+            padding: 14px;
+            color: #34413c;
+            font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+            font-size: 0.88rem;
+            line-height: 1.65;
+            overflow-wrap: anywhere;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: #eef4ef;
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.35rem;
+        }
+
+        .panel-body {
+            padding: 16px;
+        }
+
+        .timeline {
+            display: grid;
+            gap: 12px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .timeline li {
+            border-left: 3px solid var(--green);
+            padding-left: 12px;
+        }
+
+        .timeline time {
+            display: block;
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .timeline strong {
+            display: block;
+            margin: 3px 0;
+        }
+
+        .timeline span {
+            color: var(--muted);
+            font-size: 0.86rem;
+            font-weight: 720;
+        }
+
+        .feedback-item {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 13px;
+        }
+
+        .feedback-item + .feedback-item {
+            margin-top: 10px;
+        }
+
+        .feedback-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .feedback-item p {
+            margin-bottom: 0;
+            color: #52605a;
+            font-size: 0.9rem;
+            font-weight: 660;
+        }
+
+        .share-box {
+            display: grid;
+            gap: 10px;
+        }
+
+        .share-box label {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .share-box textarea {
+            min-height: 112px;
+            resize: vertical;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+            color: var(--ink);
+            font-weight: 680;
+        }
+
+        @media (max-width: 980px) {
+            .room-hero,
+            .room-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 680px) {
+            .room-dashboard {
+                width: min(100% - 24px, 1220px);
+                padding-top: 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+
+            .record-grid,
+            .profile-meta {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="room-dashboard" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 돌아가기">
+                <strong>빌더클럽</strong>
+                <span>Builder Room</span>
+            </a>
+            <nav class="top-actions" aria-label="빌더룸 이동">
+                <a class="button" href="dashboard.html">공용 대시보드로 돌아가기</a>
+                <a class="button" href="projects-list.html">프로젝트 목록</a>
+                <a class="button" href="write-knowledge.html">지식 공유</a>
+                <a class="button" href="write-feedback.html">피드백 요청</a>
+                <a class="button" href="write-question.html">막힌 부분 질문</a>
+                <a class="button primary" href="write-log.html">오늘 기록 작성</a>
+            </nav>
+        </header>
+
+        <section class="room-hero" aria-labelledby="room-title">
+            <div class="profile-panel">
+                <p class="kicker">Personal Workspace</p>
+                <h1 id="room-title">빌더 A의 작업실</h1>
+                <p class="profile-copy">
+                    AI 업무 자동화 도구를 만드는 과정, 막힌 지점, 사용한 프롬프트, 받은 피드백을 한곳에 모읍니다.
+                    여기서 정리된 기록 중 함께 볼 만한 내용만 공용 대시보드와 지식 공간으로 공유합니다.
+                </p>
+                <div class="profile-meta" aria-label="빌더룸 요약">
+                    <div class="meta-card">
+                        <span>프로젝트</span>
+                        <strong>AI 업무 자동화 도구</strong>
+                    </div>
+                    <div class="meta-card">
+                        <span>상태</span>
+                        <strong>기획 정리</strong>
+                    </div>
+                    <div class="meta-card">
+                        <span>진행률</span>
+                        <strong>40%</strong>
+                    </div>
+                    <div class="meta-card">
+                        <span>공유 범위</span>
+                        <strong>클럽 공개</strong>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="profile-panel status-panel" aria-labelledby="project-goal-title">
+                <h2 id="project-goal-title">프로젝트 목표</h2>
+                <p>
+                    반복되는 운영 업무를 작은 자동화 흐름으로 줄이고, 비개발자도 수정 가능한 체크리스트형 도구를 만듭니다.
+                </p>
+                <div class="progress" aria-label="프로젝트 40퍼센트 진행"><i style="--value: 40%"></i></div>
+                <ul class="status-list">
+                    <li><strong>이번 주 목표</strong><span>첫 사용자 시나리오 3개와 입력 폼 구조 확정</span></li>
+                    <li><strong>도움 요청</strong><span>자동화 범위가 너무 넓지 않은지 검토 필요</span></li>
+                </ul>
+            </aside>
+        </section>
+
+        <div class="room-layout">
+            <section class="record-grid" aria-label="빌더룸 기록">
+                <article class="record-card">
+                    <h2>오늘 작업한 것</h2>
+                    <ul>
+                        <li>자동화 대상 업무를 수집, 분류, 알림 세 흐름으로 나눴습니다.</li>
+                        <li>사용자가 처음 보는 화면에서 필요한 입력값을 5개로 줄였습니다.</li>
+                        <li>대시보드에 보여줄 상태값 초안을 정리했습니다.</li>
+                    </ul>
+                </article>
+
+                <article class="record-card">
+                    <h2>막힌 부분</h2>
+                    <p>
+                        자동화 범위를 넓히면 기능은 좋아 보이지만 첫 버전에서 설명하기 어려워집니다.
+                        어느 수준까지 줄여야 하는지 판단이 필요합니다.
+                    </p>
+                    <p><a class="button" href="write-question.html">이 막힌 부분 질문으로 전환</a></p>
+                </article>
+
+                <article class="record-card">
+                    <h2>시도한 방법</h2>
+                    <ul>
+                        <li>사용자 여정을 업무 시작 전, 진행 중, 완료 후로 나눠 봤습니다.</li>
+                        <li>각 단계에서 실제로 반복되는 입력만 남겼습니다.</li>
+                        <li>Claude Code에게 화면 흐름을 3단계로 줄이는 안을 요청했습니다.</li>
+                    </ul>
+                </article>
+
+                <article class="record-card">
+                    <h2>해결한 방법</h2>
+                    <p>
+                        첫 버전은 “반복 업무 체크리스트 생성” 하나만 해결하는 도구로 좁혔습니다.
+                        알림과 리포트는 다음 버전 후보로 분리했습니다.
+                    </p>
+                    <p><a class="button" href="write-knowledge.html">해결 과정 지식으로 공유</a></p>
+                </article>
+
+                <article class="record-card wide">
+                    <h2>사용한 AI 프롬프트</h2>
+                    <div class="prompt-box">
+                        반복 업무 자동화 도구의 첫 버전 범위를 줄이고 싶어. 사용자는 비개발자이고, 하루에 반복해서 처리하는 업무를 체크리스트로 만들고 싶어 해. 핵심 입력값, 첫 화면 구조, 다음 버전으로 미룰 기능을 표로 정리해줘.
+                    </div>
+                    <p><a class="button" href="write-knowledge.html">프롬프트를 노하우로 정리</a></p>
+                </article>
+
+                <article class="record-card">
+                    <h2>받은 피드백</h2>
+                    <ul>
+                        <li>“자동화”보다 “반복 업무 줄이기”라는 표현이 더 이해하기 쉽습니다.</li>
+                        <li>첫 화면에서 예시 업무를 하나 보여주면 진입 장벽이 낮아질 것 같습니다.</li>
+                    </ul>
+                </article>
+
+                <article class="record-card">
+                    <h2>다음 작업</h2>
+                    <ul>
+                        <li>입력 폼 필드명을 실제 사용자의 말로 바꾸기</li>
+                        <li>체크리스트 생성 결과 화면 와이어프레임 만들기</li>
+                        <li>공용 대시보드에 공유할 질문 1개 정리하기</li>
+                    </ul>
+                </article>
+            </section>
+
+            <aside class="side-stack">
+                <section class="panel" aria-labelledby="timeline-title">
+                    <div class="panel-header">
+                        <h2 id="timeline-title">최근 빌드로그</h2>
+                    </div>
+                    <div class="panel-body">
+                        <ol class="timeline">
+                            <li>
+                                <time datetime="2026-04-30">4월 30일</time>
+                                <strong>범위를 체크리스트 생성으로 좁힘</strong>
+                                <span>공용 피드에 요약 공유 예정</span>
+                            </li>
+                            <li>
+                                <time datetime="2026-04-29">4월 29일</time>
+                                <strong>사용자 시나리오 초안 작성</strong>
+                                <span>피드백 2개 반영</span>
+                            </li>
+                            <li>
+                                <time datetime="2026-04-28">4월 28일</time>
+                                <strong>아이디어 선언</strong>
+                                <span>프로젝트 목표 등록</span>
+                            </li>
+                        </ol>
+                    </div>
+                </section>
+
+                <section class="panel" aria-labelledby="feedback-title">
+                    <div class="panel-header">
+                        <h2 id="feedback-title">피드백 메모</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="feedback-item">
+                            <strong>빌더 B</strong>
+                            <p>첫 화면 문구는 “반복 업무를 체크리스트로 바꾸기”가 더 바로 이해됩니다.</p>
+                        </div>
+                        <div class="feedback-item">
+                            <strong>빌더 D</strong>
+                            <p>예시 데이터를 넣어서 결과 화면을 먼저 보여주면 좋겠습니다.</p>
+                        </div>
+                        <p><a class="button" href="write-feedback.html">새 피드백 요청 작성</a></p>
+                    </div>
+                </section>
+
+                <section class="panel" id="share-note" aria-labelledby="share-title">
+                    <div class="panel-header">
+                        <h2 id="share-title">공유 초안</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="share-box">
+                            <label for="share-draft">공용 대시보드에 공유할 내용</label>
+                            <textarea id="share-draft">오늘은 자동화 범위를 줄이는 작업을 했습니다. 첫 버전은 반복 업무 체크리스트 생성에 집중하고, 알림/리포트는 다음 버전으로 미루기로 했습니다.</textarea>
+                            <a class="button primary" href="write-log.html">빌드로그로 정리하기</a>
+                        </div>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

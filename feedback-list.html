@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 피드백 요청 목록 화면입니다.">
+    <title>피드백 요청 목록 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .feedback-list {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--amber);
+            background: var(--amber);
+            color: #fffefa;
+        }
+
+        .page-head,
+        .filter-panel,
+        .panel,
+        .feedback-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: end;
+            margin-bottom: 18px;
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--amber);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .page-head p {
+            max-width: 760px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .page-stat {
+            min-width: 174px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fff7e5;
+            padding: 14px;
+        }
+
+        .page-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .page-stat strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .filter-panel {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) 170px 190px 170px;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #2f3b36;
+            font-size: 0.84rem;
+            font-weight: 950;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            padding: 0 12px;
+            font-weight: 680;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 850;
+        }
+
+        .card-list {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .feedback-card {
+            box-shadow: 0 10px 24px rgba(34, 43, 38, 0.06);
+            padding: 16px;
+        }
+
+        .feedback-card h3 {
+            margin-bottom: 7px;
+            font-size: 1.08rem;
+            line-height: 1.35;
+        }
+
+        .feedback-card p,
+        .review-block span {
+            color: #52605a;
+            font-size: 0.92rem;
+            font-weight: 660;
+        }
+
+        .card-top,
+        .card-meta,
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-top {
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .badge,
+        .tag {
+            display: inline-flex;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #f5f7f4;
+            padding: 3px 8px;
+            color: #47524d;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .badge.waiting {
+            background: #fff7e5;
+            color: var(--amber);
+        }
+
+        .badge.active {
+            background: #eef4fb;
+            color: var(--blue);
+        }
+
+        .badge.done {
+            background: #eef7f0;
+            color: var(--green-dark);
+        }
+
+        .review-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin: 12px 0;
+        }
+
+        .review-block {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 11px;
+        }
+
+        .review-block strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #2f3b36;
+            font-size: 0.84rem;
+        }
+
+        .screen-link {
+            display: inline-flex;
+            margin-top: 4px;
+            color: var(--blue);
+            font-size: 0.86rem;
+            font-weight: 900;
+        }
+
+        .card-meta {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 16px;
+            list-style: none;
+        }
+
+        .side-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+        }
+
+        .side-list strong {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.35;
+        }
+
+        .side-list span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 760;
+        }
+
+        @media (max-width: 1040px) {
+            .filter-panel,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .feedback-list {
+                width: min(100% - 24px, 1240px);
+                padding-top: 16px;
+            }
+
+            .topbar,
+            .page-head {
+                align-items: flex-start;
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+
+            .review-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="feedback-list" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Feedback Board</span>
+            </a>
+            <nav class="top-actions" aria-label="피드백 요청 목록 이동">
+                <a class="button" href="dashboard.html">공용 대시보드</a>
+                <a class="button primary" href="write-feedback.html">피드백 요청 작성</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="feedback-list-title">
+            <div>
+                <p class="kicker">User Feedback</p>
+                <h1 id="feedback-list-title">피드백 요청 목록</h1>
+                <p>빌더들이 만든 화면과 흐름을 사용자 관점으로 확인하고, 마감이 가까운 요청부터 함께 봅니다.</p>
+            </div>
+            <div class="page-stat" aria-label="피드백 요청 통계">
+                <span>마감 임박</span>
+                <strong>4</strong>
+            </div>
+        </section>
+
+        <section class="filter-panel" aria-label="피드백 요청 목록 필터">
+            <div class="field">
+                <label for="feedback-search">상단 검색</label>
+                <input id="feedback-search" type="search" placeholder="프로젝트, 화면, 확인 관점 검색">
+            </div>
+            <div class="field">
+                <label for="status-filter">상태 필터</label>
+                <select id="status-filter">
+                    <option>전체 상태</option>
+                    <option>대기</option>
+                    <option>진행 중</option>
+                    <option>완료</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="project-filter">프로젝트 필터</label>
+                <select id="project-filter">
+                    <option>전체 프로젝트</option>
+                    <option>AI 업무 자동화 도구</option>
+                    <option>소규모 모임 랜딩 빌더</option>
+                    <option>예약 경험 개선 도구</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="due-filter">마감일 필터</label>
+                <select id="due-filter">
+                    <option>마감 임박</option>
+                    <option>오늘</option>
+                    <option>이번 주</option>
+                    <option>완료 포함</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel" aria-labelledby="cards-title">
+                <div class="panel-header">
+                    <h2 id="cards-title">피드백 요청 카드</h2>
+                    <span>사용자 관점 검토</span>
+                </div>
+                <div class="card-list">
+                    <article class="feedback-card">
+                        <div class="card-top">
+                            <span class="badge waiting">대기</span>
+                            <span class="badge">마감 D-1</span>
+                        </div>
+                        <h3><a href="feedback-detail.html">반복 업무 체크리스트 첫 화면이 바로 이해되는지 봐주세요</a></h3>
+                        <p>첫 사용자가 업무 이름, 반복 주기, 확인 항목을 입력한 뒤 무엇이 생성되는지 이해하는지 보고 싶습니다.</p>
+                        <div class="review-grid">
+                            <div class="review-block"><strong>확인받고 싶은 관점</strong><span>목적과 다음 행동이 첫 화면에서 바로 보이는지</span></div>
+                            <div class="review-block"><strong>보고 싶은 화면 / 링크</strong><span>체크리스트 생성 초안</span><a class="screen-link" href="write-feedback.html">화면 보기</a></div>
+                            <div class="review-block"><strong>사용자가 해야 할 행동</strong><span>업무 정보를 입력하고 생성 버튼을 누르기</span></div>
+                            <div class="review-block"><strong>댓글 수</strong><span>댓글 2개 · 추가 의견 필요</span></div>
+                        </div>
+                        <div class="card-meta"><span>빌더 A</span><span>AI 업무 자동화 도구</span><span>오늘</span></div>
+                    </article>
+
+                    <article class="feedback-card">
+                        <div class="card-top">
+                            <span class="badge active">진행 중</span>
+                            <span class="badge">마감 D-2</span>
+                        </div>
+                        <h3><a href="feedback-detail.html">소규모 모임 랜딩의 CTA가 충분히 명확한지 확인이 필요합니다</a></h3>
+                        <p>첫 방문자가 커뮤니티 신청과 샘플 보기 중 어느 행동을 해야 하는지 헷갈리지 않는지 확인합니다.</p>
+                        <div class="review-grid">
+                            <div class="review-block"><strong>확인받고 싶은 관점</strong><span>CTA 우선순위와 모바일 버튼 길이</span></div>
+                            <div class="review-block"><strong>보고 싶은 화면 / 링크</strong><span>모바일 첫 화면</span><a class="screen-link" href="write-feedback.html">화면 보기</a></div>
+                            <div class="review-block"><strong>사용자가 해야 할 행동</strong><span>모임 페이지를 만들거나 예시를 둘러보기</span></div>
+                            <div class="review-block"><strong>댓글 수</strong><span>댓글 5개 · 반영 중</span></div>
+                        </div>
+                        <div class="card-meta"><span>빌더 B</span><span>소규모 모임 랜딩 빌더</span><span>어제</span></div>
+                    </article>
+
+                    <article class="feedback-card">
+                        <div class="card-top">
+                            <span class="badge done">완료</span>
+                            <span class="badge">회고 연결</span>
+                        </div>
+                        <h3><a href="feedback-detail.html">예약 완료 화면의 안내 문구가 충분히 안심되는지 검토했습니다</a></h3>
+                        <p>완료 이후 사용자가 확인해야 할 정보와 다음 행동을 줄이고, 보조 문구를 정리했습니다.</p>
+                        <div class="review-grid">
+                            <div class="review-block"><strong>확인받고 싶은 관점</strong><span>안심감, 정보 우선순위, 다음 행동</span></div>
+                            <div class="review-block"><strong>보고 싶은 화면 / 링크</strong><span>예약 완료 화면</span><a class="screen-link" href="write-feedback.html">화면 보기</a></div>
+                            <div class="review-block"><strong>사용자가 해야 할 행동</strong><span>예약 정보를 확인하고 캘린더에 저장하기</span></div>
+                            <div class="review-block"><strong>댓글 수</strong><span>댓글 4개 · 완료</span></div>
+                        </div>
+                        <div class="card-meta"><span>빌더 D</span><span>예약 경험 개선 도구</span><span>2일 전</span></div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="side-stack">
+                <section class="panel" aria-labelledby="due-title">
+                    <div class="panel-header">
+                        <h2 id="due-title">마감 임박</h2>
+                        <span>먼저 보기</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>체크리스트 첫 화면 이해도</strong><span>빌더 A · D-1 · 댓글 2개</span></li>
+                        <li><strong>랜딩 CTA 우선순위</strong><span>빌더 B · D-2 · 댓글 5개</span></li>
+                        <li><strong>태그 이름 직관성</strong><span>빌더 C · D-3 · 댓글 1개</span></li>
+                    </ul>
+                </section>
+
+                <section class="panel" aria-labelledby="focus-title">
+                    <div class="panel-header">
+                        <h2 id="focus-title">피드백 관점</h2>
+                        <span>댓글 기준</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>이해도</strong><span>처음 봐도 목적과 다음 행동이 보이는가</span></li>
+                        <li><strong>필요성</strong><span>사용자에게 실제로 필요한 기능인가</span></li>
+                        <li><strong>흐름</strong><span>입력, 확인, 결과 순서가 자연스러운가</span></li>
+                        <li><strong>문구</strong><span>버튼과 안내 문장이 부담 없이 읽히는가</span></li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

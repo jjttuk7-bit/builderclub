@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 질문과 노하우 목록 화면입니다.">
+    <title>질문 & 노하우 목록 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --red: #a93e3e;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .questions-list {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--blue);
+            background: var(--blue);
+            color: #fffefa;
+        }
+
+        .page-head,
+        .filter-panel,
+        .panel,
+        .question-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: end;
+            margin-bottom: 18px;
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--blue);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .page-head p {
+            max-width: 760px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .page-stat {
+            min-width: 174px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #eef4fb;
+            padding: 14px;
+        }
+
+        .page-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .page-stat strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .filter-panel {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) 170px 170px 190px;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #2f3b36;
+            font-size: 0.84rem;
+            font-weight: 950;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            padding: 0 12px;
+            font-weight: 680;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 850;
+        }
+
+        .card-list {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .question-card {
+            box-shadow: 0 10px 24px rgba(34, 43, 38, 0.06);
+            padding: 16px;
+        }
+
+        .question-card h3 {
+            margin-bottom: 7px;
+            font-size: 1.08rem;
+            line-height: 1.35;
+        }
+
+        .question-card p {
+            margin-bottom: 12px;
+            color: #52605a;
+            font-size: 0.94rem;
+            font-weight: 660;
+        }
+
+        .card-top,
+        .card-meta,
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-top {
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .badge,
+        .tag {
+            display: inline-flex;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #f5f7f4;
+            padding: 3px 8px;
+            color: #47524d;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .badge.open {
+            background: #eef4fb;
+            color: var(--blue);
+        }
+
+        .badge.waiting {
+            background: #fff7e5;
+            color: var(--amber);
+        }
+
+        .badge.solved {
+            background: #eef7f0;
+            color: var(--green-dark);
+        }
+
+        .card-meta {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 16px;
+            list-style: none;
+        }
+
+        .side-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+        }
+
+        .side-list strong {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.35;
+        }
+
+        .side-list span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 760;
+        }
+
+        @media (max-width: 1040px) {
+            .filter-panel,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .questions-list {
+                width: min(100% - 24px, 1240px);
+                padding-top: 16px;
+            }
+
+            .topbar,
+            .page-head {
+                align-items: flex-start;
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="questions-list" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Questions Board</span>
+            </a>
+            <nav class="top-actions" aria-label="질문과 노하우 목록 이동">
+                <a class="button" href="dashboard.html">공용 대시보드</a>
+                <a class="button primary" href="write-question.html">질문 작성</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="questions-list-title">
+            <div>
+                <p class="kicker">Question & Know-how</p>
+                <h1 id="questions-list-title">질문 & 노하우 목록</h1>
+                <p>막힌 지점을 함께 해결하고, 해결된 답변은 다시 찾을 수 있는 노하우로 남깁니다.</p>
+            </div>
+            <div class="page-stat" aria-label="질문 통계">
+                <span>답변 대기</span>
+                <strong>5</strong>
+            </div>
+        </section>
+
+        <section class="filter-panel" aria-label="질문과 노하우 목록 필터">
+            <div class="field">
+                <label for="question-search">상단 검색</label>
+                <input id="question-search" type="search" placeholder="에러, 프로젝트, 프롬프트, 태그 검색">
+            </div>
+            <div class="field">
+                <label for="status-filter">상태 필터</label>
+                <select id="status-filter">
+                    <option>전체</option>
+                    <option>열린 질문</option>
+                    <option>답변 대기</option>
+                    <option>해결된 노하우</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="tag-filter">태그 필터</label>
+                <select id="tag-filter">
+                    <option>전체 태그</option>
+                    <option>React</option>
+                    <option>Electron</option>
+                    <option>UX 문구</option>
+                    <option>MVP</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="sort-order">정렬</label>
+                <select id="sort-order">
+                    <option>긴급도순</option>
+                    <option>답변순</option>
+                    <option>최신순</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel" aria-labelledby="cards-title">
+                <div class="panel-header">
+                    <h2 id="cards-title">질문 카드</h2>
+                    <span>열린 질문 중심</span>
+                </div>
+                <div class="card-list">
+                    <article class="question-card">
+                        <div class="card-top">
+                            <span class="badge waiting">답변 대기</span>
+                            <span class="badge">오늘 답변 필요</span>
+                        </div>
+                        <h3><a href="question-detail.html">자동화 도구 첫 버전 범위를 어디까지 줄이면 좋을까요?</a></h3>
+                        <p>기능 범위가 넓어지면서 첫 화면의 다음 행동이 흐려지는 문제가 있습니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">MVP</span>
+                            <span class="tag">UX 문구</span>
+                            <span class="tag">기획</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 A</span><span>댓글 0</span><span>오늘</span></div>
+                    </article>
+
+                    <article class="question-card">
+                        <div class="card-top">
+                            <span class="badge open">열린 질문</span>
+                            <span class="badge">이번 주 안에 확인</span>
+                        </div>
+                        <h3><a href="question-detail.html">React 상태가 저장 후 되돌아가는 문제를 어디서 봐야 할까요?</a></h3>
+                        <p>폼 저장은 성공하지만 목록으로 돌아오면 이전 값이 보이는 상황입니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">React</span>
+                            <span class="tag">상태 관리</span>
+                            <span class="tag">폼</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 C</span><span>댓글 2</span><span>1시간 전</span></div>
+                    </article>
+
+                    <article class="question-card">
+                        <div class="card-top">
+                            <span class="badge solved">해결됨</span>
+                            <span class="badge">노하우 전환</span>
+                        </div>
+                        <h3><a href="question-detail.html">Electron 빌드 후 sqlite 파일 경로가 달라지는 문제 해결</a></h3>
+                        <p>개발 경로와 패키징 경로를 분리하고, 앱 리소스 기준으로 파일 위치를 잡았습니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">Electron</span>
+                            <span class="tag">sqlite</span>
+                            <span class="tag">패키징</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 G</span><span>답변 4</span><span>어제</span></div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="side-stack">
+                <section class="panel" aria-labelledby="waiting-title">
+                    <div class="panel-header">
+                        <h2 id="waiting-title">답변 대기</h2>
+                        <span>도움 필요</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>검색 필터가 모바일에서 너무 길게 보입니다</strong><span>UI · 스크린샷 있음</span></li>
+                        <li><strong>API 에러를 사용자 문구로 바꾸는 기준이 필요합니다</strong><span>UX · 예시 필요</span></li>
+                        <li><strong>CSV 업로드 빈 행 처리를 어디서 해야 할까요?</strong><span>데이터 · 재현 있음</span></li>
+                    </ul>
+                </section>
+
+                <section class="panel" aria-labelledby="solved-title">
+                    <div class="panel-header">
+                        <h2 id="solved-title">해결된 노하우</h2>
+                        <span>다시 보기</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>상태 저장 후 목록 갱신 순서</strong><span>캐시 무효화와 낙관적 업데이트 분리</span></li>
+                        <li><strong>빌드 오류 로그 읽는 순서</strong><span>첫 에러, 원인 후보, 확인 명령</span></li>
+                        <li><strong>피드백 요청 문구 줄이기</strong><span>확인 관점과 사용자 행동만 남기기</span></li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

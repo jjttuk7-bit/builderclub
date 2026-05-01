@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 지식 공유 목록 화면입니다.">
+    <title>지식 공유 목록 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .knowledge-list {
+            width: min(1240px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+            color: #fffefa;
+        }
+
+        .page-head,
+        .filter-panel,
+        .panel,
+        .knowledge-card {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 18px;
+            align-items: end;
+            margin-bottom: 18px;
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--green-dark);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .page-head p {
+            max-width: 760px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .page-stat {
+            min-width: 170px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #eef7f0;
+            padding: 14px;
+        }
+
+        .page-stat span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .page-stat strong {
+            display: block;
+            margin-top: 4px;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .filter-panel {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) 180px 180px 220px;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 16px;
+        }
+
+        .field {
+            display: grid;
+            gap: 7px;
+        }
+
+        .field label {
+            color: #2f3b36;
+            font-size: 0.84rem;
+            font-weight: 950;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 44px;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            padding: 0 12px;
+            font-weight: 680;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.36fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .panel-header span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 850;
+        }
+
+        .card-list {
+            display: grid;
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .knowledge-card {
+            box-shadow: 0 10px 24px rgba(34, 43, 38, 0.06);
+            padding: 16px;
+        }
+
+        .knowledge-card h3 {
+            margin-bottom: 7px;
+            font-size: 1.08rem;
+            line-height: 1.35;
+        }
+
+        .knowledge-card p {
+            margin-bottom: 12px;
+            color: #52605a;
+            font-size: 0.94rem;
+            font-weight: 660;
+        }
+
+        .card-top,
+        .card-meta,
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .card-top {
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .badge,
+        .tag {
+            display: inline-flex;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #f5f7f4;
+            padding: 3px 8px;
+            color: #47524d;
+            font-size: 0.72rem;
+            font-weight: 900;
+        }
+
+        .badge.green {
+            background: #eef7f0;
+            color: var(--green-dark);
+        }
+
+        .badge.blue {
+            background: #eef4fb;
+            color: var(--blue);
+        }
+
+        .card-meta {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 16px;
+            list-style: none;
+        }
+
+        .side-list li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+        }
+
+        .side-list strong {
+            display: block;
+            margin-bottom: 5px;
+            line-height: 1.35;
+        }
+
+        .side-list span {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 760;
+        }
+
+        @media (max-width: 1040px) {
+            .filter-panel,
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .knowledge-list {
+                width: min(100% - 24px, 1240px);
+                padding-top: 16px;
+            }
+
+            .topbar,
+            .page-head {
+                align-items: flex-start;
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="knowledge-list" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Knowledge Board</span>
+            </a>
+            <nav class="top-actions" aria-label="지식 공유 목록 이동">
+                <a class="button" href="dashboard.html">공용 대시보드</a>
+                <a class="button primary" href="write-knowledge.html">지식 공유 작성</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="knowledge-list-title">
+            <div>
+                <p class="kicker">Knowledge Share</p>
+                <h1 id="knowledge-list-title">지식 공유 목록</h1>
+                <p>빌더들이 해결한 문제, 사용한 프롬프트, 배운 방법을 다시 찾을 수 있게 모아둡니다.</p>
+            </div>
+            <div class="page-stat" aria-label="지식 공유 통계">
+                <span>이번 주 공유</span>
+                <strong>18</strong>
+            </div>
+        </section>
+
+        <section class="filter-panel" aria-label="지식 공유 목록 필터">
+            <div class="field">
+                <label for="knowledge-search">상단 검색</label>
+                <input id="knowledge-search" type="search" placeholder="프롬프트, 오류 해결, MVP, 배포 검색">
+            </div>
+            <div class="field">
+                <label for="category-filter">카테고리 필터</label>
+                <select id="category-filter">
+                    <option>전체</option>
+                    <option>Claude Code</option>
+                    <option>기획 노하우</option>
+                    <option>개발</option>
+                    <option>디자인</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="tag-filter">태그 필터</label>
+                <select id="tag-filter">
+                    <option>전체 태그</option>
+                    <option>MVP</option>
+                    <option>프롬프트</option>
+                    <option>오류 해결</option>
+                    <option>배포</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="sort-order">정렬</label>
+                <select id="sort-order">
+                    <option>최신순</option>
+                    <option>인기순</option>
+                    <option>해결됨</option>
+                </select>
+            </div>
+        </section>
+
+        <div class="content-grid">
+            <section class="panel" aria-labelledby="cards-title">
+                <div class="panel-header">
+                    <h2 id="cards-title">지식 글 카드</h2>
+                    <span>공유된 노하우</span>
+                </div>
+                <div class="card-list">
+                    <article class="knowledge-card">
+                        <div class="card-top">
+                            <span class="badge green">기획 노하우</span>
+                            <span class="badge">해결됨</span>
+                        </div>
+                        <h3><a href="knowledge-detail.html">첫 버전 범위를 줄일 때 쓴 MVP 정리 프롬프트</a></h3>
+                        <p>기능이 커질 때 핵심 입력값, 첫 화면 구조, 다음 버전으로 미룰 기능을 분리하는 방법입니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">MVP</span>
+                            <span class="tag">프롬프트</span>
+                            <span class="tag">사용자 흐름</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 A</span><span>오늘</span><span>저장 6</span></div>
+                    </article>
+
+                    <article class="knowledge-card">
+                        <div class="card-top">
+                            <span class="badge blue">Claude Code</span>
+                            <span class="badge">인기</span>
+                        </div>
+                        <h3><a href="knowledge-detail.html">긴 작업을 Codex에게 맡길 때 쓰는 체크포인트 프롬프트</a></h3>
+                        <p>목표, 파일 범위, 검증 명령, 중간 보고 기준을 한 번에 전달하는 템플릿입니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">작업 지시</span>
+                            <span class="tag">검증</span>
+                            <span class="tag">프롬프트</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 C</span><span>어제</span><span>댓글 4</span></div>
+                    </article>
+
+                    <article class="knowledge-card">
+                        <div class="card-top">
+                            <span class="badge">개발</span>
+                            <span class="badge">오류 해결</span>
+                        </div>
+                        <h3><a href="knowledge-detail.html">CSV 업로드 실패를 재현하고 원인을 좁히는 체크리스트</a></h3>
+                        <p>파일 인코딩, 헤더 검증, 빈 행 처리 순서로 확인하며 문제를 재현하는 방법입니다.</p>
+                        <div class="tag-row">
+                            <span class="tag">CSV</span>
+                            <span class="tag">디버깅</span>
+                            <span class="tag">체크리스트</span>
+                        </div>
+                        <div class="card-meta"><span>빌더 E</span><span>2일 전</span><span>저장 3</span></div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="side-stack">
+                <section class="panel" aria-labelledby="pinned-title">
+                    <div class="panel-header">
+                        <h2 id="pinned-title">고정 지식</h2>
+                        <span>먼저 보기</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>빌드로그를 질문으로 바꾸는 기준</strong><span>막힌 부분을 공용 질문으로 전환하는 템플릿</span></li>
+                        <li><strong>피드백 요청 전에 확인할 4가지</strong><span>이해도, 필요성, 흐름, 문구</span></li>
+                        <li><strong>정적 프로토타입 점검 리스트</strong><span>모바일 폭, 키보드 이동, 텍스트 넘침</span></li>
+                    </ul>
+                </section>
+
+                <section class="panel" aria-labelledby="claude-title">
+                    <div class="panel-header">
+                        <h2 id="claude-title">Claude Code 노하우</h2>
+                        <span>공용 자료</span>
+                    </div>
+                    <ul class="side-list">
+                        <li><strong>작업 전 컨텍스트 전달법</strong><span>목표, 현재 파일, 검증 기준을 한 번에 제공</span></li>
+                        <li><strong>실패 로그 요약 요청법</strong><span>첫 에러, 원인 후보, 다음 확인 명령 분리</span></li>
+                        <li><strong>리뷰 요청 프롬프트</strong><span>변경 의도와 걱정되는 부분을 함께 전달</span></li>
+                    </ul>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>

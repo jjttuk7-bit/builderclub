@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
+    <meta name="description" content="빌더클럽 빌드로그 작성 화면입니다.">
+    <title>빌드로그 작성 - 빌더클럽</title>
+    <style>
+        :root {
+            --bg: #f5f7f4;
+            --surface: #fffefa;
+            --surface-2: #eef4ef;
+            --ink: #17201d;
+            --muted: #626d68;
+            --line: #d8ded7;
+            --line-strong: #aeb9b1;
+            --green: #2f7656;
+            --green-dark: #214f3d;
+            --blue: #2456a6;
+            --clay: #b85f43;
+            --amber: #a97813;
+            --shadow: 0 16px 38px rgba(34, 43, 38, 0.1);
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background:
+                linear-gradient(90deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                linear-gradient(180deg, rgba(23, 32, 29, 0.035) 1px, transparent 1px),
+                var(--bg);
+            background-size: 34px 34px;
+            color: var(--ink);
+            font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+            line-height: 1.55;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input,
+        select,
+        textarea {
+            font: inherit;
+        }
+
+        :focus-visible {
+            outline: 3px solid rgba(36, 86, 166, 0.72);
+            outline-offset: 3px;
+        }
+
+        .skip-link {
+            position: fixed;
+            top: -80px;
+            left: 16px;
+            z-index: 1000;
+            border-radius: var(--radius);
+            background: var(--ink);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+        }
+
+        .skip-link:focus {
+            top: 16px;
+        }
+
+        .write-log {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: grid;
+            gap: 2px;
+        }
+
+        .brand strong {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.55rem;
+            line-height: 1;
+        }
+
+        .brand span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .top-actions,
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            border: 1px solid rgba(23, 32, 29, 0.18);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 9px 12px;
+            color: #2f3b36;
+            font-weight: 900;
+            white-space: nowrap;
+            box-shadow: 0 8px 18px rgba(34, 43, 38, 0.06);
+        }
+
+        .button.primary {
+            border-color: var(--green-dark);
+            background: var(--green-dark);
+            color: #fffefa;
+        }
+
+        .page-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(260px, 0.34fr);
+            gap: 18px;
+            align-items: stretch;
+            margin-bottom: 18px;
+        }
+
+        .head-panel,
+        .context-card,
+        .form-panel,
+        .side-panel {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: rgba(255, 254, 250, 0.96);
+            box-shadow: var(--shadow);
+        }
+
+        .head-panel {
+            padding: clamp(22px, 4vw, 34px);
+        }
+
+        .kicker {
+            margin: 0 0 10px;
+            color: var(--green-dark);
+            font-size: 0.78rem;
+            font-weight: 950;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+        }
+
+        h1,
+        h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            font-size: clamp(2.35rem, 5vw, 4.8rem);
+            line-height: 0.98;
+        }
+
+        .head-panel p {
+            max-width: 720px;
+            margin-bottom: 0;
+            color: #52605a;
+            font-weight: 680;
+        }
+
+        .context-card {
+            display: grid;
+            align-content: center;
+            gap: 10px;
+            padding: 18px;
+        }
+
+        .context-card span {
+            color: var(--muted);
+            font-size: 0.76rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .context-card strong {
+            display: block;
+            font-size: 1.1rem;
+            line-height: 1.25;
+        }
+
+        .progress {
+            height: 9px;
+            border: 1px solid rgba(23, 32, 29, 0.12);
+            border-radius: 999px;
+            background: #e6ece7;
+            overflow: hidden;
+        }
+
+        .progress i {
+            display: block;
+            width: var(--value);
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+        }
+
+        .write-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(300px, 0.38fr);
+            gap: 18px;
+            align-items: start;
+        }
+
+        .form-panel {
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            border-bottom: 1px solid var(--line);
+            background: var(--surface-2);
+            padding: 15px 16px;
+        }
+
+        .panel-header h2 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .log-form {
+            display: grid;
+            gap: 16px;
+            padding: 18px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+        }
+
+        .field.wide {
+            grid-column: 1 / -1;
+        }
+
+        label,
+        legend {
+            color: #2f3b36;
+            font-size: 0.9rem;
+            font-weight: 950;
+        }
+
+        .hint {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            background: #fffefa;
+            color: var(--ink);
+            font-weight: 680;
+        }
+
+        input,
+        select {
+            min-height: 44px;
+            padding: 0 12px;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            padding: 12px;
+            line-height: 1.6;
+        }
+
+        .prompt-area {
+            min-height: 190px;
+            font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+            font-size: 0.9rem;
+        }
+
+        fieldset {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .scope-options {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .scope-options label {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 8px;
+            align-items: start;
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #f8faf7;
+            padding: 10px;
+            font-size: 0.84rem;
+            line-height: 1.35;
+        }
+
+        .scope-options input {
+            width: 18px;
+            min-width: 18px;
+            height: 18px;
+            min-height: 18px;
+            margin-top: 2px;
+        }
+
+        .side-stack {
+            display: grid;
+            gap: 18px;
+        }
+
+        .side-panel {
+            overflow: hidden;
+        }
+
+        .side-body {
+            padding: 16px;
+        }
+
+        .check-list,
+        .mini-feed {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .check-list li,
+        .mini-feed li {
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            background: #fffefa;
+            padding: 12px;
+            color: #52605a;
+            font-size: 0.88rem;
+            font-weight: 680;
+        }
+
+        .check-list strong,
+        .mini-feed strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--ink);
+        }
+
+        .mini-feed span {
+            color: var(--muted);
+            font-size: 0.78rem;
+            font-weight: 850;
+        }
+
+        @media (max-width: 980px) {
+            .page-head,
+            .write-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .write-log {
+                width: min(100% - 24px, 1180px);
+                padding-top: 16px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .top-actions,
+            .button {
+                width: 100%;
+            }
+
+            .form-grid,
+            .scope-options {
+                grid-template-columns: 1fr;
+            }
+
+            .form-actions {
+                justify-content: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content">본문으로 이동</a>
+
+    <main class="write-log" id="main-content">
+        <header class="topbar">
+            <a class="brand" href="dashboard.html" aria-label="빌더클럽 대시보드로 이동">
+                <strong>빌더클럽</strong>
+                <span>Build Log Writer</span>
+            </a>
+            <nav class="top-actions" aria-label="작성 화면 이동">
+                <a class="button" href="builder-room.html">빌더룸으로 돌아가기</a>
+                <a class="button" href="logs-list.html">빌드로그 목록</a>
+                <a class="button primary" href="#log-form">기록 작성</a>
+            </nav>
+        </header>
+
+        <section class="page-head" aria-labelledby="write-log-title">
+            <div class="head-panel">
+                <p class="kicker">Builder Room</p>
+                <h1 id="write-log-title">빌드로그 작성</h1>
+                <p>오늘의 제작 과정, 막힌 지점, 사용한 AI 프롬프트, 다음 작업을 한 번에 남깁니다.</p>
+            </div>
+            <aside class="context-card" aria-label="작성 대상 프로젝트">
+                <span>작성 대상</span>
+                <strong>빌더 A · AI 업무 자동화 도구</strong>
+                <div class="progress" aria-label="프로젝트 40퍼센트 진행"><i style="--value: 40%"></i></div>
+                <span>기획 정리 단계</span>
+            </aside>
+        </section>
+
+        <div class="write-layout">
+            <section class="form-panel" aria-labelledby="form-title">
+                <div class="panel-header">
+                    <h2 id="form-title">오늘의 기록</h2>
+                </div>
+
+                <form class="log-form" id="log-form" action="builder-room.html" method="get">
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="log-date">작성일</label>
+                            <input id="log-date" name="date" type="date" value="2026-04-30">
+                        </div>
+                        <div class="field">
+                            <label for="log-status">프로젝트 상태</label>
+                            <select id="log-status" name="status">
+                                <option>기획 정리</option>
+                                <option>화면 제작</option>
+                                <option>개발 중</option>
+                                <option>피드백 요청</option>
+                                <option>회고 작성</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label for="today-work">오늘 작업한 것</label>
+                            <textarea id="today-work" name="today_work">자동화 대상 업무를 수집, 분류, 알림 세 흐름으로 나누고 첫 화면 입력값을 줄였습니다.</textarea>
+                            <p class="hint">실제로 손댄 작업만 짧게 적습니다.</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="blocked-issue">막힌 부분</label>
+                            <textarea id="blocked-issue" name="blocked_issue">자동화 범위를 어디까지 줄여야 첫 버전이 명확해지는지 판단이 필요합니다.</textarea>
+                            <p class="hint">질문으로 전환할 수 있게 구체적으로 씁니다.</p>
+                        </div>
+
+                        <div class="field">
+                            <label for="attempted-method">시도한 방법</label>
+                            <textarea id="attempted-method" name="attempted_method">사용자 여정을 업무 시작 전, 진행 중, 완료 후로 나누고 각 단계의 반복 입력을 확인했습니다.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="solved-method">해결한 방법</label>
+                            <textarea id="solved-method" name="solved_method">첫 버전은 반복 업무 체크리스트 생성 하나만 해결하는 도구로 좁혔습니다.</textarea>
+                        </div>
+
+                        <div class="field wide">
+                            <label for="ai-prompt">사용한 AI 프롬프트</label>
+                            <textarea class="prompt-area" id="ai-prompt" name="ai_prompt">반복 업무 자동화 도구의 첫 버전 범위를 줄이고 싶어. 사용자는 비개발자이고, 하루에 반복해서 처리하는 업무를 체크리스트로 만들고 싶어 해. 핵심 입력값, 첫 화면 구조, 다음 버전으로 미룰 기능을 표로 정리해줘.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="learned">오늘 배운 점</label>
+                            <textarea id="learned" name="learned">기능을 늘리는 것보다 사용자가 바로 이해하는 첫 문제를 좁히는 일이 더 중요했습니다.</textarea>
+                        </div>
+
+                        <div class="field">
+                            <label for="next-action">다음 작업</label>
+                            <textarea id="next-action" name="next_action">입력 폼 필드명을 실제 사용자 언어로 바꾸고 결과 화면 와이어프레임을 만듭니다.</textarea>
+                        </div>
+                    </div>
+
+                    <fieldset>
+                        <legend>공유 범위</legend>
+                        <div class="scope-options">
+                            <label><input type="radio" name="scope" value="private"> 나만 보기</label>
+                            <label><input type="radio" name="scope" value="club" checked> 빌더클럽 공유</label>
+                            <label><input type="radio" name="scope" value="public"> 공용 지식으로 전환</label>
+                        </div>
+                    </fieldset>
+
+                    <div class="form-actions">
+                        <a class="button" href="builder-room.html">임시저장</a>
+                        <button class="button primary" type="submit">빌드로그 저장</button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="side-stack">
+                <section class="side-panel" aria-labelledby="checklist-title">
+                    <div class="panel-header">
+                        <h2 id="checklist-title">작성 체크</h2>
+                    </div>
+                    <div class="side-body">
+                        <ul class="check-list">
+                            <li><strong>과정 중심</strong>완성 여부보다 오늘 무엇을 시도했는지 남깁니다.</li>
+                            <li><strong>질문 가능하게</strong>막힌 부분은 다른 빌더가 답할 수 있는 문장으로 씁니다.</li>
+                            <li><strong>프롬프트 보존</strong>잘 된 지시문과 실패한 지시문 모두 재사용 가능한 자료가 됩니다.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section class="side-panel" aria-labelledby="recent-title">
+                    <div class="panel-header">
+                        <h2 id="recent-title">최근 기록</h2>
+                    </div>
+                    <div class="side-body">
+                        <ul class="mini-feed">
+                            <li><strong>사용자 시나리오 초안 작성</strong><span>4월 29일 · 피드백 2개</span></li>
+                            <li><strong>아이디어 선언</strong><span>4월 28일 · 프로젝트 목표 등록</span></li>
+                            <li><strong>업무 자동화 사례 수집</strong><span>4월 27일 · 자료실 후보</span></li>
+                        </ul>
+                    </div>
+                </section>
+            </aside>
+        </div>
+    </main>
+</body>
+</html>
