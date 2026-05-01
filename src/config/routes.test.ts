@@ -11,6 +11,7 @@ describe("app routes", () => {
     expect(appRoutes.questions.new).toBe("/questions/new");
     expect(appRoutes.feedback.new).toBe("/feedback/new");
     expect(appRoutes.knowledge.new).toBe("/knowledge/new");
+    expect(appRoutes.login).toBe("/login");
   });
 
   it("contains primary navigation items", () => {

@@ -1,5 +1,6 @@
 export const appRoutes = {
   home: "/",
+  login: "/login",
   dashboard: "/dashboard",
   builderRoom: (handle: string) => `/builders/${handle}`,
   projects: "/projects",
