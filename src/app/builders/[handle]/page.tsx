@@ -63,17 +63,22 @@ export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) 
       </section>
 
       <section className={styles.workspace} aria-label="진행 중인 프로젝트">
-        <div className={styles.sectionHeader}>
+        <header className={styles.sectionHeader}>
+          <div>
+            <h2>내 프로젝트</h2>
+            <p>{builder.display_name}님이 현재 진행 중인 프로젝트 목록입니다.</p>
+          </div>
+          <Link href="/projects/new" className={styles.createProjectBtn}>
+            + 새 프로젝트 시작하기
+          </Link>
+        </header>
+
+        <div className={styles.projectsGrid}>
           <CardSection
-            title="내 프로젝트"
-            description={`${builder.display_name}님이 현재 진행 중인 프로젝트 목록입니다.`}
+            title=""
+            description=""
             items={projects}
           />
-          <div className={styles.actionArea}>
-            <Link href="/projects/new" className={styles.createProjectBtn}>
-              + 새 프로젝트 시작하기
-            </Link>
-          </div>
         </div>
       </section>
     </AppShell>
