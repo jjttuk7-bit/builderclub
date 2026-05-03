@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth-config";
 
 const protectedPrefixes = [
   "/dashboard",
@@ -10,9 +12,9 @@ const protectedPrefixes = [
   "/knowledge",
 ];
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const session = request.cookies.get("builderclub_session")?.value;
+  const session = await getServerSession(authOptions);
 
   if (pathname === "/login" && session) {
     return NextResponse.redirect(new URL("/dashboard", request.url));

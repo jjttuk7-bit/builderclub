@@ -291,3 +291,11 @@ export function getFeedbackDetailById(id: string) {
 export function getKnowledgeDetailById(id: string) {
   return sampleKnowledgeDetails.find((detail) => detail.id === id) ?? null;
 }
+
+export function getBuilderByEmail(email: string) {
+  return sampleBuilders.find((builder) => builder.email === email);
+}
+
+export function addMockBuilder(builder: Builder) {
+  sampleBuilders.push(builder);
+}

@@ -1,31 +1,42 @@
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
 
-type LoginPageProps = {
-  searchParams?: Promise<{
-    next?: string;
-  }>;
-};
+export const dynamic = "force-dynamic";
 
-async function loginAction(formData: FormData) {
-  "use server";
+export default function LoginPage() {
+  const router = useRouter();
+  const [nextPath, setNextPath] = useState("/dashboard");
+  const [error, setError] = useState<string | null>(null);
 
-  const nextPath = String(formData.get("next") || "/dashboard");
-  const cookieStore = await cookies();
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setNextPath(params.get("next") || "/dashboard");
+  }, []);
 
-  cookieStore.set("builderclub_session", "builder-a", {
-    httpOnly: true,
-    sameSite: "lax",
-    path: "/",
-  });
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
 
-  redirect(nextPath.startsWith("/") ? nextPath : "/dashboard");
-}
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+      callbackUrl: nextPath,
+    });
 
-export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const params = searchParams ? await searchParams : {};
-  const nextPath = params.next || "/dashboard";
+    if (result?.error) {
+      setError("로그인 실패: 이메일 또는 비밀번호를 확인하세요.");
+    } else {
+      router.push(nextPath);
+    }
+  };
 
   return (
     <main className={styles.page}>
@@ -33,15 +44,22 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         <p className={styles.eyebrow}>Members Only</p>
         <h1>빌더클럽 로그인</h1>
         <p>클럽 멤버만 대시보드와 개인 빌더룸에 접근할 수 있습니다.</p>
-        <p className={styles.hint}>현재 프로토타입은 빌더 A로 입장하는 목업 로그인입니다.</p>
-        <form action={loginAction} className={styles.form}>
-          <input type="hidden" name="next" value={nextPath} />
+        <p className={styles.hint}>이메일과 비밀번호로 로그인하세요.</p>
+        {error && <p className={styles.error}>{error}</p>}
+        <form onSubmit={handleSubmit} className={styles.form}>
           <label htmlFor="email">
             이메일
-            <input id="email" name="email" defaultValue="builder-a@builderclub.local" />
+            <input id="email" name="email" type="email" required />
           </label>
-          <button type="submit">빌더 A로 입장</button>
+          <label htmlFor="password">
+            비밀번호
+            <input id="password" name="password" type="password" required />
+          </label>
+          <button type="submit">로그인</button>
         </form>
+        <p className={styles.signupLink} style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "var(--color-muted-foreground)" }}>
+          아직 계정이 없으신가요? <Link href="/signup" style={{ color: "var(--color-primary)", textDecoration: "none", fontWeight: 500 }}>회원가입</Link>
+        </p>
       </section>
     </main>
   );

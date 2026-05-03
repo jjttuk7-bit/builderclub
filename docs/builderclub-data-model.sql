@@ -19,8 +19,6 @@ create type target_type_enum as enum ('project', 'build_log', 'knowledge_post', 
 create table builders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid null,
-  email text unique,
-  password_hash text,
   display_name text not null,
   handle text not null unique,
   bio text null,

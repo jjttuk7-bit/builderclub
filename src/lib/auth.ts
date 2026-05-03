@@ -1,4 +1,5 @@
-import { cookies } from "next/headers";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth-config";
 import { getBuilderByHandle } from "@/lib/mock-db";
 import type { Builder } from "@/lib/data-model";
 
@@ -10,13 +11,13 @@ export type SessionBuilder = Builder & {
 
 export async function getSessionBuilder(): Promise<SessionBuilder | null> {
   try {
-    const cookieStore = await cookies();
-    const session = cookieStore.get("builderclub_session")?.value;
-    if (!session) {
+    const session = await getServerSession(authOptions);
+    const handle = (session?.user as any)?.handle;
+    if (!handle) {
       return null;
     }
 
-    const builder = getBuilderByHandle(session);
+    const builder = getBuilderByHandle(handle as string);
     if (!builder) {
       return null;
     }

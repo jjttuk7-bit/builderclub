@@ -1,6 +1,8 @@
 export const currentBuilder = {
   id: "builder-a",
   user_id: null,
+  email: "builder-a@builderclub.local",
+  password_hash: "password", // In production, this should be hashed
   display_name: "빌더 A",
   handle: "builder-a",
   bio: "프로토타입을 만드는 빌더",

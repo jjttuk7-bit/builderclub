@@ -17,6 +17,8 @@ export type TargetType = "project" | "build_log" | "knowledge_post" | "question"
 export interface Builder {
   id: string;
   user_id?: string | null;
+  email?: string;
+  password_hash?: string;
   display_name: string;
   handle: string;
   bio?: string | null;
