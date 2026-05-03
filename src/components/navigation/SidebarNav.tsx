@@ -48,7 +48,7 @@ export function SidebarNav({ builder }: SidebarNavProps) {
           setCurrentBuilder({
             name: data.name,
             role: data.role ?? "클럽 멤버",
-            workspaceHref: data.workspaceHref ?? "/builders/builder-a",
+            workspaceHref: data.workspaceHref ?? "/",
           });
         }
       } catch {
@@ -70,7 +70,7 @@ export function SidebarNav({ builder }: SidebarNavProps) {
         <span>로그인 중</span>
         <strong>{currentBuilder.name}</strong>
         <small>{currentBuilder.role}</small>
-        <Link href={currentBuilder.workspaceHref ?? "/builders/builder-a"}>내 작업공간</Link>
+        <Link href={currentBuilder.workspaceHref ?? "/"}>내 작업공간</Link>
         <button onClick={() => signOut({ callbackUrl: "/login" })} className={styles.logoutBtn}>
           로그아웃
         </button>
