@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 import { primaryNavigation, writeNavigation } from "@/config/routes";
 import styles from "./SidebarNav.module.css";
 
@@ -70,6 +71,9 @@ export function SidebarNav({ builder }: SidebarNavProps) {
         <strong>{currentBuilder.name}</strong>
         <small>{currentBuilder.role}</small>
         <Link href={currentBuilder.workspaceHref ?? "/builders/builder-a"}>내 작업공간</Link>
+        <button onClick={() => signOut({ callbackUrl: "/login" })} className={styles.logoutBtn}>
+          로그아웃
+        </button>
       </section>
       <ul className={styles.list}>
         {primaryNavigation.map((item) => {

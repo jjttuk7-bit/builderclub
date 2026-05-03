@@ -63,6 +63,29 @@
   font-weight: 950;
 }
 
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin-top: 6px;
+  border-radius: var(--radius);
+  background: transparent;
+  border: 1px solid rgba(47, 118, 86, 0.24);
+  color: var(--ink);
+  font-weight: 950;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+}
+
+.logoutBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
 .memberBadge {
   justify-self: start;
   margin: 0;
