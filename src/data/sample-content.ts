@@ -1,9 +1,11 @@
-export const sampleActivities = [];
-export const sampleProjects = [];
-export const sampleLogs = [];
-export const sampleQuestions = [];
-export const sampleFeedbackRequests = [];
-export const sampleKnowledgePosts = [];
+import type { CardSectionItem } from "@/lib/mock-db";
+
+export const sampleActivities: CardSectionItem[] = [];
+export const sampleProjects: CardSectionItem[] = [];
+export const sampleLogs: CardSectionItem[] = [];
+export const sampleQuestions: CardSectionItem[] = [];
+export const sampleFeedbackRequests: CardSectionItem[] = [];
+export const sampleKnowledgePosts: CardSectionItem[] = [];
 
 export const sampleBuilderWorkspace = {
   handle: "",
