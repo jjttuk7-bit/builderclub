@@ -29,9 +29,9 @@ export function SidebarNav({ builder }: SidebarNavProps) {
   const pathname = usePathname();
   const [currentBuilder, setCurrentBuilder] = useState<SidebarBuilder>(
     builder ?? {
-      name: "빌더 A",
-      role: "클럽 멤버",
-      workspaceHref: "/builders/builder-a",
+      name: "GUEST",
+      role: "방문자",
+      workspaceHref: "/",
     }
   );
 
