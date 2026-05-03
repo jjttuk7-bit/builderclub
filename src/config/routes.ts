@@ -3,7 +3,11 @@ export const appRoutes = {
   login: "/login",
   dashboard: "/dashboard",
   builderRoom: (handle: string) => `/builders/${handle}`,
-  projects: "/projects",
+  projects: {
+    index: "/projects",
+    new: "/projects/new",
+    detail: (id: string) => `/projects/${id}`,
+  },
   logs: {
     index: "/logs",
     new: "/logs/new",

@@ -256,6 +256,38 @@ export function createKnowledgePost(payload: {
   return item;
 }
 
+export function createProject(payload: {
+  name: string;
+  summary: string;
+  problem: string;
+  features: string;
+  visibility: string;
+}) {
+  const id = createId("project");
+  const item: Required<CardSectionItem> = {
+    id,
+    title: payload.name,
+    summary: payload.summary,
+    href: `/projects/${id}`,
+    status: "building",
+    author: currentBuilder.name,
+    tags: ["Project"],
+  };
+
+  sampleProjects.unshift(item);
+  sampleActivities.unshift({
+    id: createId("activity"),
+    title: `${currentBuilder.name}님이 새 프로젝트를 시작했습니다: ${payload.name}`,
+    summary: payload.summary,
+    href: item.href,
+    status: item.status,
+    author: currentBuilder.name,
+    tags: item.tags,
+  });
+
+  return item;
+}
+
 export function getProjects(): CardSectionItem[] {
   return sampleProjects as CardSectionItem[];
 }

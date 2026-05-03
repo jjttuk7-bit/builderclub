@@ -45,3 +45,15 @@ export const knowledgeForm = {
     { label: "재사용 팁", placeholder: "다음에 비슷한 상황에서 어떻게 쓰면 좋을까요?" },
   ],
 } as const;
+
+export const projectForm = {
+  title: "새 프로젝트 시작",
+  description: "만들고 싶은 프로젝트의 목표와 핵심 기능을 정의합니다.",
+  submitLabel: "프로젝트 생성",
+  fields: [
+    { label: "프로젝트 이름", type: "input", placeholder: "예: 노코드 CRM 리빌드" },
+    { label: "한 줄 요약", type: "input", placeholder: "이 프로젝트가 해결하려는 핵심 가치를 적어주세요." },
+    { label: "문제 정의", placeholder: "어떤 불편함을 해결하고 싶나요?" },
+    { label: "핵심 기능", placeholder: "MVP로 구현할 3가지 정도의 기능을 적어주세요." },
+  ],
+} as const;
