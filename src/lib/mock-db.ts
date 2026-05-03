@@ -243,14 +243,14 @@ export function createKnowledgePost(payload: {
     title,
     status: item.status,
     builder: currentBuilder.name,
-    project: "빌더룸 지식 공유",
+    project: '빌더룸 지식 공유',
     sections: [
-      { title: "배운 배경", body: payload.background },
-      { title: "핵심 내용", body: payload.coreContent },
-      { title: "적용한 방법", body: payload.appliedMethod },
-      { title: "재사용 팁", body: payload.reuseTip },
+      { title: '배운 배경', body: payload.background },
+      { title: '핵심 내용', body: payload.coreContent },
+      { title: '적용한 방법', body: payload.appliedMethod },
+      { title: '재사용 팁', body: payload.reuseTip },
     ],
-    actions: ["관련 질문 보기"],
+    actions: ['관련 질문 보기'],
   });
 
   return item;
@@ -258,6 +258,14 @@ export function createKnowledgePost(payload: {
 
 export function getProjects(): CardSectionItem[] {
   return sampleProjects as CardSectionItem[];
+}
+
+export function getProjectById(id: string) {
+  return sampleProjects.find((p) => p.id === id) ?? null;
+}
+
+export function getProjectsByBuilderName(name: string): CardSectionItem[] {
+  return sampleProjects.filter((p) => p.author === name) as CardSectionItem[];
 }
 
 export function getBuildLogs(): CardSectionItem[] {
