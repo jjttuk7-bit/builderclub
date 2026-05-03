@@ -3,6 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useState } from "react";
+import Link from "next/link";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -48,7 +49,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <label htmlFor="email">
             이메일
-            <input id="email" name="email" type="email" defaultValue="builder-a@builderclub.local" required />
+            <input id="email" name="email" type="email" required />
           </label>
           <label htmlFor="password">
             비밀번호
@@ -56,6 +57,9 @@ export default function LoginPage() {
           </label>
           <button type="submit">로그인</button>
         </form>
+        <p className={styles.signupLink} style={{ marginTop: "1.5rem", textAlign: "center", fontSize: "0.875rem", color: "var(--color-muted-foreground)" }}>
+          아직 계정이 없으신가요? <Link href="/signup" style={{ color: "var(--color-primary)", textDecoration: "none", fontWeight: 500 }}>회원가입</Link>
+        </p>
       </section>
     </main>
   );

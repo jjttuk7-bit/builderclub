@@ -1,7 +1,8 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { supabase } from "@/lib/supabase";
-import { getBuilderByHandle } from "@/lib/mock-db";
+import { getBuilderByEmail } from "@/lib/mock-db";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -30,26 +31,34 @@ export const authOptions: NextAuthOptions = {
             return null;
           }
 
-          if (builder.password_hash === password) {
-            return {
-              id: builder.id,
-              email: builder.email,
-              name: builder.display_name,
-              handle: builder.handle,
-            };
+          if (builder.password_hash) {
+            const isPasswordValid = await bcrypt.compare(password, builder.password_hash);
+            if (isPasswordValid) {
+              return {
+                id: builder.id,
+                email: builder.email,
+                name: builder.display_name,
+                handle: builder.handle,
+              };
+            }
           }
 
           return null;
         }
 
-        const builder = getBuilderByHandle("builder-a");
-        if (!builder || email !== "builder-a@builderclub.local" || password !== "password") {
+        const builder = getBuilderByEmail(email);
+        if (!builder || !builder.password_hash) {
+          return null;
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, builder.password_hash);
+        if (!isPasswordValid) {
           return null;
         }
 
         return {
           id: builder.id,
-          email,
+          email: builder.email,
           name: builder.display_name,
           handle: builder.handle,
         };
