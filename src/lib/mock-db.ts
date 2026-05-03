@@ -8,10 +8,6 @@ import {
   sampleProjects,
   sampleQuestions,
   sampleLogs,
-  sampleLogDetail,
-  sampleQuestionDetail,
-  sampleFeedbackDetail,
-  sampleKnowledgeDetail,
 } from "@/data/sample-content";
 
 export type CardSectionItem = {
@@ -34,10 +30,10 @@ export type DetailRecord = {
   actions: string[];
 };
 
-const sampleLogDetails: DetailRecord[] = [sampleLogDetail];
-const sampleQuestionDetails: DetailRecord[] = [sampleQuestionDetail];
-const sampleFeedbackDetails: DetailRecord[] = [sampleFeedbackDetail];
-const sampleKnowledgeDetails: DetailRecord[] = [sampleKnowledgeDetail];
+const sampleLogDetails: DetailRecord[] = [];
+const sampleQuestionDetails: DetailRecord[] = [];
+const sampleFeedbackDetails: DetailRecord[] = [];
+const sampleKnowledgeDetails: DetailRecord[] = [];
 
 function createId(prefix: string) {
   return `${prefix}-${crypto.randomUUID()}`;
