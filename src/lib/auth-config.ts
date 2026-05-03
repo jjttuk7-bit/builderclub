@@ -11,6 +11,7 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
+        accessCode: { label: "Access Code", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
@@ -19,6 +20,12 @@ export const authOptions: NextAuthOptions = {
 
         const email = credentials.email as string;
         const password = credentials.password as string;
+        const accessCode = credentials.accessCode as string;
+
+        const expectedCode = process.env.CLUB_ACCESS_CODE || "0000";
+        if (accessCode !== expectedCode) {
+          return null;
+        }
 
         if (supabase) {
           const { data: builder, error } = await supabase

@@ -23,16 +23,18 @@ export default function LoginPage() {
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const accessCode = formData.get("accessCode") as string;
 
     const result = await signIn("credentials", {
       email,
       password,
+      accessCode,
       redirect: false,
       callbackUrl: nextPath,
     });
 
     if (result?.error) {
-      setError("로그인 실패: 이메일 또는 비밀번호를 확인하세요.");
+      setError("로그인 실패: 이메일, 비밀번호 또는 입장 코드를 확인하세요.");
     } else {
       router.push(nextPath);
     }
@@ -54,6 +56,10 @@ export default function LoginPage() {
           <label htmlFor="password">
             비밀번호
             <input id="password" name="password" type="password" required />
+          </label>
+          <label htmlFor="accessCode">
+            클럽 입장 코드 (4자리)
+            <input id="accessCode" name="accessCode" type="password" maxLength={4} placeholder="****" required />
           </label>
           <button type="submit">로그인</button>
         </form>
