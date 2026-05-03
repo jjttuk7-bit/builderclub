@@ -2,12 +2,24 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getProjectById, getBuildLogs, getQuestions, getFeedbackRequests, getKnowledgePosts } from "@/lib/mock-db";
 import { CardSection } from "@/components/sections/CardSection";
+import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import styles from "./page.module.css";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const project = getProjectById(id);
+  let project = getProjectById(id);
+
+  if (!project && supabase) {
+    const { data } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (data) {
+      project = data;
+    }
+  }
 
   if (!project) {
     return (

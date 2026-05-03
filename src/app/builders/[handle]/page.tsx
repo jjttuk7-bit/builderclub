@@ -3,6 +3,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
 import { getBuilderByHandle, getProjectsByBuilderName } from "@/lib/mock-db";
+import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 
 type BuilderRoomPageProps = {
@@ -13,7 +14,18 @@ type BuilderRoomPageProps = {
 
 export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) {
   const { handle } = await params;
-  const builder = getBuilderByHandle(handle);
+  let builder = getBuilderByHandle(handle);
+
+  if (!builder && supabase) {
+    const { data } = await supabase
+      .from("builders")
+      .select("*")
+      .eq("handle", handle)
+      .single();
+    if (data) {
+      builder = data;
+    }
+  }
 
   if (!builder) {
     return (
