@@ -18,14 +18,12 @@ export default function SignupPage() {
     const formData = new FormData(event.currentTarget);
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const displayName = formData.get("displayName") as string;
-    const handle = formData.get("handle") as string;
 
     try {
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, displayName, handle }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
@@ -59,14 +57,7 @@ export default function SignupPage() {
             비밀번호
             <input id="password" name="password" type="password" minLength={6} required />
           </label>
-          <label htmlFor="displayName">
-            닉네임
-            <input id="displayName" name="displayName" type="text" placeholder="예: 지은" required />
-          </label>
-          <label htmlFor="handle">
-            고유 핸들 (아이디)
-            <input id="handle" name="handle" type="text" placeholder="예: jieun-ai" required />
-          </label>
+
           <button type="submit" disabled={loading}>
             {loading ? "가입 중..." : "가입하기"}
           </button>

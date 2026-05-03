@@ -6,11 +6,15 @@ import type { Builder } from "@/lib/data-model";
 
 export async function POST(request: Request) {
   try {
-    const { email, password, displayName, handle } = await request.json();
+    const { email, password } = await request.json();
 
-    if (!email || !password || !displayName || !handle) {
-      return NextResponse.json({ error: "모든 필드를 입력해주세요." }, { status: 400 });
+    if (!email || !password) {
+      return NextResponse.json({ error: "이메일과 비밀번호를 입력해주세요." }, { status: 400 });
     }
+
+    const emailPrefix = email.split("@")[0];
+    const displayName = emailPrefix;
+    const handle = `${emailPrefix}-${Math.floor(Math.random() * 10000)}`;
 
     const passwordHash = await bcrypt.hash(password, 10);
 
