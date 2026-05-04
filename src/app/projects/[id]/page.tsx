@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getProjectById, getBuildLogs, getQuestions, getFeedbackRequests, getKnowledgePosts } from "@/lib/mock-db";
