@@ -25,6 +25,14 @@ export type CardSectionItem = {
   features?: string;
 };
 
+// Explicit type alias for optional fields to avoid Required<> issues
+export type OptionalCardSectionItem = Omit<CardSectionItem, 'problem_definition' | 'core_features' | 'problem' | 'features'> & {
+  problem_definition?: string;
+  core_features?: string;
+  problem?: string;
+  features?: string;
+};
+
 export type DetailRecord = {
   id: string;
   title: string;
