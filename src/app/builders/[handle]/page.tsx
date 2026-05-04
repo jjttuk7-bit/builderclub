@@ -39,7 +39,27 @@ export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) 
     );
   }
 
-  const projects = getProjectsByBuilderName(builder.display_name);
+  let projects = getProjectsByBuilderName(builder.display_name);
+
+  if (supabase) {
+    const { data: dbProjects } = await supabase
+      .from("projects")
+      .select("*")
+      .eq("builder_id", builder.id)
+      .order("created_at", { ascending: false });
+    
+    if (dbProjects) {
+      projects = dbProjects.map(p => ({
+        id: p.id,
+        title: p.title,
+        summary: p.summary,
+        href: `/projects/${p.id}`,
+        status: p.status,
+        author: p.author,
+        tags: p.tags
+      }));
+    }
+  }
 
   return (
     <AppShell>
