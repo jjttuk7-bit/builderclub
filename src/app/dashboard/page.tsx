@@ -41,25 +41,32 @@ export default async function DashboardPage() {
   let activities = [...getActivityFeed()];
 
   if (supabase) {
-    const { data: projects } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(10);
-    
-    if (projects) {
-      const projectActivities = projects.map(p => ({
-        id: `activity-p-${p.id}`,
-        title: p.title,
-        summary: p.summary || "",
-        href: `/projects/${p.id}`,
-        status: p.status,
-        author: p.author,
-        tags: p.tags || [],
-        created_at: p.created_at
-      }));
+    try {
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(10);
       
-      activities = [...projectActivities, ...activities];
+      if (error) {
+        console.error("Supabase projects fetch error:", error);
+      } else if (projects) {
+        const projectActivities = projects.map(p => ({
+          id: `activity-p-${p.id}`,
+          title: p.title,
+          summary: p.summary || "",
+          href: `/projects/${p.id}`,
+          status: p.status,
+          author: p.author,
+          tags: p.tags || [],
+          created_at: p.created_at
+        }));
+        
+        activities = [...projectActivities, ...activities];
+      }
+    } catch (err) {
+      console.error("Dashboard data loading error:", err);
+      // 에러 발생 시에도 Mock DB 데이터는 표시
     }
   }
 
@@ -79,43 +86,18 @@ export default async function DashboardPage() {
         </div>
         <div className={styles.cardGrid}>
           {activities.length > 0 ? (
-            activities.map((activity) => {
-              const canDelete = activity.id?.startsWith("activity-p-");
-              const projectId = canDelete && activity.id ? activity.id.replace("activity-p-", "") : null;
-              
-              return (
-                <ContentCard
-                  key={activity.id || activity.href}
-                  title={activity.title}
-                  summary={activity.summary}
-                  href={activity.href}
-                  status={activity.status}
-                  author={activity.author}
-                  tags={activity.tags}
-                  createdAt={formatCreatedAt(activity.created_at)}
-                  onDelete={projectId ? (e) => {
-                    e.preventDefault();
-                    if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
-                      const form = document.createElement("form");
-                      form.method = "POST";
-                      form.action = window.location.pathname;
-                      const actionInput = document.createElement("input");
-                      actionInput.type = "hidden";
-                      actionInput.name = "action";
-                      actionInput.value = "delete";
-                      form.appendChild(actionInput);
-                      const input = document.createElement("input");
-                      input.type = "hidden";
-                      input.name = "project-id";
-                      input.value = projectId;
-                      form.appendChild(input);
-                      document.body.appendChild(form);
-                      form.submit();
-                    }
-                  } : undefined}
-                />
-              );
-            })
+            activities.map((activity) => (
+              <ContentCard
+                key={activity.id || activity.href}
+                title={activity.title}
+                summary={activity.summary}
+                href={activity.href}
+                status={activity.status}
+                author={activity.author}
+                tags={activity.tags}
+                createdAt={formatCreatedAt(activity.created_at)}
+              />
+            ))
           ) : (
             <p className={styles.empty}>최근 활동이 없습니다.</p>
           )}
