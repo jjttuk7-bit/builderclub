@@ -40,26 +40,32 @@ export default async function ProjectsPage() {
   let projects = getProjects();
 
   if (supabase) {
-    const { data } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
+    try {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false });
 
-    if (data) {
-      // Convert Supabase data to CardSectionItem format
-      const dbProjects = data.map(p => ({
-        id: p.id,
-        title: p.title,
-        summary: p.summary,
-        href: `/projects/${p.id}`,
-        status: p.status,
-        author: p.author,
-        tags: p.tags,
-        created_at: p.created_at
-      }));
-      
-      // Combine with mock projects
-      projects = [...dbProjects, ...projects.filter(p => !dbProjects.some(dbP => dbP.title === p.title))];
+      if (error) {
+        console.error("Supabase projects fetch error:", error);
+      } else if (data) {
+        // Convert Supabase data to CardSectionItem format
+        const dbProjects = data.map(p => ({
+          id: p.id,
+          title: p.title,
+          summary: p.summary,
+          href: `/projects/${p.id}`,
+          status: p.status,
+          author: p.author,
+          tags: p.tags,
+          created_at: p.created_at
+        }));
+        
+        // Combine with mock projects
+        projects = [...dbProjects, ...projects.filter(p => !dbProjects.some(dbP => dbP.title === p.title))];
+      }
+    } catch (error) {
+      console.error("Failed to load projects from Supabase:", error);
     }
   }
 
