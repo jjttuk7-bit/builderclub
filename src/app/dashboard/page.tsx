@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { ContentCard } from "@/components/cards/ContentCard";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
