@@ -88,6 +88,7 @@
   padding-top: 16px;
   border-top: 1px solid #f3f4f6;
   margin-top: auto;
+  pointer-events: none;
 }
 
 .view-more {
@@ -98,6 +99,8 @@
   font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.2s ease;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .view-more:hover {
