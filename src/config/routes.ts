@@ -3,11 +3,6 @@ export const appRoutes = {
   login: "/login",
   dashboard: "/dashboard",
   builderRoom: (handle: string) => `/builders/${handle}`,
-  projects: {
-    index: "/projects",
-    new: "/projects/new",
-    detail: (id: string) => `/projects/${id}`,
-  },
   logs: {
     index: "/logs",
     new: "/logs/new",
@@ -33,7 +28,6 @@ export const appRoutes = {
 export const primaryNavigation = [
   { label: "대시보드", href: appRoutes.dashboard },
   { label: "빌더룸", href: "/builders" },
-  { label: "프로젝트", href: appRoutes.projects.index },
   { label: "빌드로그", href: appRoutes.logs.index },
   { label: "질문", href: appRoutes.questions.index },
   { label: "피드백", href: appRoutes.feedback.index },

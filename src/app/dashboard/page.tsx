@@ -2,9 +2,7 @@ export const dynamic = "force-dynamic";
 import { ContentCard } from "@/components/cards/ContentCard";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CardSection } from "@/components/sections/CardSection";
 import { getActivityFeed } from "@/lib/mock-db";
-import { getProjectsByBuilderName } from "@/lib/mock-db";
 import { getSessionBuilder } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
@@ -43,51 +41,95 @@ async function deleteProject(formData: FormData) {
 export default async function DashboardPage() {
   const builder = await getSessionBuilder();
   let activities = [...getActivityFeed()];
-  let myProjects: any[] = [];
-
-  if (builder) {
-    myProjects = getProjectsByBuilderName(builder.name);
-  }
 
   if (supabase) {
     try {
-      const { data: projects, error } = await supabase
-        .from("projects")
+      const { data: logs, error: logsError } = await supabase
+        .from("logs")
         .select("*")
         .order("created_at", { ascending: false })
-        .limit(10);
+        .limit(5);
       
-      if (error) {
-        console.error("Supabase projects fetch error:", error);
-      } else if (projects) {
-        const projectActivities = projects.map(p => ({
-          id: `activity-p-${p.id}`,
-          title: p.title,
-          summary: p.summary || "",
-          href: `/projects/${p.id}`,
-          status: p.status,
-          author: p.author,
-          tags: p.tags || [],
-          created_at: p.created_at
+      if (logsError) {
+        console.error("Supabase logs fetch error:", logsError);
+      } else if (logs) {
+        const logActivities = logs.map(l => ({
+          id: `activity-l-${l.id}`,
+          title: l.title,
+          summary: l.summary || "",
+          href: `/logs/${l.id}`,
+          status: "shared",
+          author: l.author,
+          tags: l.tags || [],
+          created_at: l.created_at
         }));
-        
-        // 활동 내역 병합 (중복 방지)
-        activities = [...projectActivities, ...activities.filter(a => !projectActivities.some(pa => pa.href === a.href))];
+        activities = [...logActivities, ...activities.filter(a => !logActivities.some(la => la.href === a.href))];
+      }
 
-        // 내 프로젝트 병합
-        if (builder) {
-          const myDbProjects = projects.filter(p => p.builder_id === builder.id || p.author === builder.name).map(p => ({
-            id: p.id,
-            title: p.title,
-            summary: p.summary || "",
-            href: `/projects/${p.id}`,
-            status: p.status,
-            author: p.author,
-            tags: p.tags || [],
-            created_at: p.created_at
-          }));
-          myProjects = [...myDbProjects, ...myProjects.filter(p => !myDbProjects.some(mdb => mdb.title === p.title))];
-        }
+      const { data: questions, error: questionsError } = await supabase
+        .from("questions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      
+      if (questionsError) {
+        console.error("Supabase questions fetch error:", questionsError);
+      } else if (questions) {
+        const questionActivities = questions.map(q => ({
+          id: `activity-q-${q.id}`,
+          title: q.title,
+          summary: q.summary || "",
+          href: `/questions/${q.id}`,
+          status: "open",
+          author: q.author,
+          tags: q.tags || [],
+          created_at: q.created_at
+        }));
+        activities = [...questionActivities, ...activities.filter(a => !questionActivities.some(qa => qa.href === a.href))];
+      }
+
+      const { data: feedback, error: feedbackError } = await supabase
+        .from("feedback")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      
+      if (feedbackError) {
+        console.error("Supabase feedback fetch error:", feedbackError);
+      } else if (feedback) {
+        const feedbackActivities = feedback.map(f => ({
+          id: `activity-f-${f.id}`,
+          title: f.title,
+          summary: f.summary || "",
+          href: `/feedback/${f.id}`,
+          status: f.status,
+          author: f.author,
+          tags: f.tags || [],
+          created_at: f.created_at
+        }));
+        activities = [...feedbackActivities, ...activities.filter(a => !feedbackActivities.some(fa => fa.href === a.href))];
+      }
+
+      const { data: knowledge, error: knowledgeError } = await supabase
+        .from("knowledge")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      
+      if (knowledgeError) {
+        console.error("Supabase knowledge fetch error:", knowledgeError);
+      } else if (knowledge) {
+        const knowledgeActivities = knowledge.map(k => ({
+          id: `activity-k-${k.id}`,
+          title: k.title,
+          summary: k.summary || "",
+          href: `/knowledge/${k.id}`,
+          status: "shared",
+          author: k.author,
+          tags: k.tags || [],
+          created_at: k.created_at
+        }));
+        activities = [...knowledgeActivities, ...activities.filter(a => !knowledgeActivities.some(ka => ka.href === a.href))];
       }
     } catch (err) {
       console.error("Dashboard data loading error:", err);
@@ -102,16 +144,6 @@ export default async function DashboardPage() {
         title="빌더클럽 대시보드"
         description="빌더들의 기록, 질문, 피드백, 지식 공유가 모이는 전체 커뮤니티 활동 화면입니다."
       />
-
-      {builder && myProjects.length > 0 && (
-        <div style={{ marginBottom: '3rem' }}>
-          <CardSection
-            title="내 프로젝트"
-            description="내가 현재 진행 중인 프로젝트들입니다."
-            items={myProjects}
-          />
-        </div>
-      )}
 
       <section className={styles.activitySection} aria-labelledby="recent-activity-title">
         <div className={styles.sectionHeader}>

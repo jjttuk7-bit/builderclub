@@ -5,7 +5,6 @@ import {
   sampleBuilderWorkspace,
   sampleFeedbackRequests,
   sampleKnowledgePosts,
-  sampleProjects,
   sampleQuestions,
   sampleLogs,
 } from "@/data/sample-content";
@@ -275,47 +274,8 @@ export async function createProjectToSupabase(payload: {
   builder_id?: string;
   author: string;
 }) {
-  const id = createId("project");
-  const createdAt = new Date().toISOString();
-  
-  if (supabase) {
-    const { data, error } = await supabase
-      .from("projects")
-      .insert([{
-        id,
-        title: payload.name,
-        summary: payload.summary,
-        problem_definition: payload.problem,
-        core_features: payload.features,
-        visibility: payload.visibility,
-        builder_id: payload.builder_id,
-        author: payload.author,
-        status: "building",
-        tags: ["Project"],
-        created_at: createdAt,
-      }])
-      .select()
-      .single();
-
-    if (!error && data) {
-      const item: CardSectionItem = {
-        id: data.id,
-        title: data.title,
-        summary: data.summary,
-        href: `/projects/${data.id}`,
-        status: data.status,
-        author: data.author,
-        tags: data.tags,
-        problem_definition: data.problem_definition,
-        core_features: data.core_features,
-        created_at: data.created_at,
-      };
-      sampleProjects.unshift(item);
-      return item;
-    }
-  }
-
-  return createProject(payload, createdAt);
+  // Projects feature removed - return null
+  return null;
 }
 
 export function createProject(payload: {
@@ -326,71 +286,27 @@ export function createProject(payload: {
   visibility: string;
   author?: string;
 }, createdAt?: string) {
-  const id = createId("project");
-  const authorName = payload.author || currentBuilder.name;
-  const timestamp = createdAt || new Date().toISOString();
-  const item: CardSectionItem = {
-    id,
-    title: payload.name,
-    summary: payload.summary,
-    href: `/projects/${id}`,
-    status: "building",
-    author: authorName,
-    tags: ["Project"],
-    problem_definition: payload.problem,
-    core_features: payload.features,
-    created_at: timestamp,
-  };
-
-  sampleProjects.unshift(item);
-  sampleActivities.unshift({
-    id: createId("activity"),
-    title: `${authorName}님이 새 프로젝트를 시작했습니다: ${payload.name}`,
-    summary: payload.summary,
-    href: item.href,
-    status: item.status,
-    author: authorName,
-    tags: item.tags,
-  });
-
-  return item;
+  // Projects feature removed - return null
+  return null;
 }
 
 export function getProjects(): CardSectionItem[] {
-  return sampleProjects as CardSectionItem[];
+  return [];
 }
 
 export function getProjectById(id: string) {
-  return sampleProjects.find((p) => p.id === id) ?? null;
+  return null;
 }
 
 export function getProjectsByBuilderName(name: string): CardSectionItem[] {
-  return sampleProjects.filter((p) => p.author === name) as CardSectionItem[];
+  return [];
 }
 export function deleteProject(id: string): boolean {
-  const index = sampleProjects.findIndex(p => p.id === id);
-  if (index !== -1) {
-    sampleProjects.splice(index, 1);
-    return true;
-  }
   return false;
 }
 
 export async function deleteProjectFromSupabase(id: string): Promise<boolean> {
-  if (!supabase) {
-    return deleteProject(id);
-  }
-  
-  const { error } = await supabase
-    .from("projects")
-    .delete()
-    .eq("id", id);
-  
-  if (!error) {
-    // Also remove from local mock for consistency
-    deleteProject(id);
-    return true;
-  }
+  // Projects feature removed - return false
   return false;
 }
 

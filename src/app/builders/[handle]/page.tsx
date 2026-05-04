@@ -2,8 +2,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { CardSection } from "@/components/sections/CardSection";
-import { getBuilderByHandle, getProjectsByBuilderName } from "@/lib/mock-db";
+import { getBuilderByHandle } from "@/lib/mock-db";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 
@@ -40,35 +39,12 @@ export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) 
     );
   }
 
-  let projects = getProjectsByBuilderName(builder.display_name);
-
-  if (supabase) {
-    const { data: dbProjects } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("builder_id", builder.id)
-      .order("created_at", { ascending: false });
-    
-    if (dbProjects) {
-      const dbMappedProjects = dbProjects.map(p => ({
-        id: p.id,
-        title: p.title,
-        summary: p.summary,
-        href: `/projects/${p.id}`,
-        status: p.status,
-        author: p.author,
-        tags: p.tags
-      }));
-      projects = [...dbMappedProjects, ...projects.filter(p => !dbMappedProjects.some(dbP => dbP.title === p.title))];
-    }
-  }
-
   return (
     <AppShell>
       <PageHeader
         eyebrow="Builder Room"
         title={`${builder.display_name}의 빌더룸`}
-        description={builder.bio || "빌더의 프로젝트, 작업 기록, 막힌 부분, 피드백을 모아보는 공간입니다."}
+        description={builder.bio || "빌더의 작업 기록, 막힌 부분, 피드백을 모아보는 공간입니다."}
       />
       
       <section className={styles.profilePanel}>
@@ -84,23 +60,35 @@ export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) 
         </div>
       </section>
 
-      <section className={styles.workspace} aria-label="진행 중인 프로젝트">
+      <section className={styles.workspace} aria-label="빌더 활동">
         <header className={styles.sectionHeader}>
           <div>
-            <h2>내 프로젝트</h2>
-            <p>{builder.display_name}님이 현재 진행 중인 프로젝트 목록입니다.</p>
+            <h2>빌더 활동</h2>
+            <p>{builder.display_name}님의 최근 활동과 기록을 확인하세요.</p>
           </div>
-          <Link href="/projects/new" className={styles.createProjectBtn}>
-            + 새 프로젝트 시작하기
-          </Link>
         </header>
 
-        <div className={styles.projectsGrid}>
-          <CardSection
-            title=""
-            description=""
-            items={projects}
-          />
+        <div className={styles.activityGrid}>
+          <div className={styles.activityCard}>
+            <h3>빌드로그</h3>
+            <p>프로젝트 진행 과정과 학습 내용을 기록합니다.</p>
+            <Link href="/logs" className={styles.activityLink}>보러가기 →</Link>
+          </div>
+          <div className={styles.activityCard}>
+            <h3>질문</h3>
+            <p>막힌 부분이나 궁금한 점을 공유합니다.</p>
+            <Link href="/questions" className={styles.activityLink}>보러가기 →</Link>
+          </div>
+          <div className={styles.activityCard}>
+            <h3>피드백</h3>
+            <p>프로젝트에 대한 조언을 구합니다.</p>
+            <Link href="/feedback" className={styles.activityLink}>보러가기 →</Link>
+          </div>
+          <div className={styles.activityCard}>
+            <h3>지식 공유</h3>
+            <p>배운 내용을 다른 빌더들과 공유합니다.</p>
+            <Link href="/knowledge" className={styles.activityLink}>보러가기 →</Link>
+          </div>
         </div>
       </section>
     </AppShell>

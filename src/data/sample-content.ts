@@ -1,26 +1,5 @@
 import type { CardSectionItem } from "@/lib/mock-db";
 
-export const sampleProjects: CardSectionItem[] = [
-  {
-    id: "project-1",
-    title: "빌더클럽 커뮤니티 OS",
-    summary: "빌더들이 서로의 성장을 돕는 투명한 협업 플랫폼을 만듭니다.",
-    href: "/projects/project-1",
-    status: "building",
-    author: "알렉스",
-    tags: ["Next.js", "Supabase", "Design System"],
-  },
-  {
-    id: "project-2",
-    title: "AI 여행 가이드",
-    summary: "사용자의 취향을 분석하여 최적의 여행 경로를 추천하는 AI 에이전트입니다.",
-    href: "/projects/project-2",
-    status: "building",
-    author: "김철수",
-    tags: ["React", "OpenAI", "Tailwind"],
-  }
-];
-
 export const sampleActivities: CardSectionItem[] = [
   {
     id: "activity-1",
