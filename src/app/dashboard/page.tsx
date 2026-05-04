@@ -2,11 +2,34 @@ import { ContentCard } from "@/components/cards/ContentCard";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getActivityFeed } from "@/lib/mock-db";
+import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 
-const activities = getActivityFeed();
+export default async function DashboardPage() {
+  let activities = [...getActivityFeed()];
 
-export default function DashboardPage() {
+  if (supabase) {
+    const { data: projects } = await supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(10);
+    
+    if (projects) {
+      const projectActivities = projects.map(p => ({
+        id: `activity-p-${p.id}`,
+        title: `${p.author}님이 새 프로젝트를 시작했습니다: ${p.title}`,
+        summary: p.summary,
+        href: `/projects/${p.id}`,
+        status: p.status,
+        author: p.author,
+        tags: p.tags
+      }));
+      
+      activities = [...projectActivities, ...activities];
+    }
+  }
+
   return (
     <AppShell>
       <PageHeader
@@ -22,17 +45,21 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className={styles.cardGrid}>
-          {activities.map((activity) => (
-            <ContentCard
-              key={activity.href}
-              title={activity.title}
-              summary={activity.summary}
-              href={activity.href}
-              status={activity.status}
-              author={activity.author}
-              tags={activity.tags}
-            />
-          ))}
+          {activities.length > 0 ? (
+            activities.map((activity) => (
+              <ContentCard
+                key={activity.id || activity.href}
+                title={activity.title}
+                summary={activity.summary}
+                href={activity.href}
+                status={activity.status}
+                author={activity.author}
+                tags={activity.tags}
+              />
+            ))
+          ) : (
+            <p className={styles.empty}>최근 활동이 없습니다.</p>
+          )}
         </div>
       </section>
     </AppShell>
