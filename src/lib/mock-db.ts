@@ -79,7 +79,7 @@ export function createBuildLog(payload: {
   visibility: string;
 }) {
   const id = createId("log");
-  const item: Required<CardSectionItem> = {
+  const item: CardSectionItem = {
     id,
     title: `${payload.project} 빌드로그`,
     summary: payload.today,
