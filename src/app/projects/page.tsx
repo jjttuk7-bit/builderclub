@@ -5,6 +5,37 @@ import { CardSection } from "@/components/sections/CardSection";
 import { getProjects } from "@/lib/mock-db";
 import { supabase } from "@/lib/supabase";
 
+function formatTimeAgo(dateString?: string): string {
+  if (!dateString) return "";
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+  
+  if (diffInSeconds < 60) return "방금 전";
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
+  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}일 전`;
+  
+  return date.toLocaleDateString("ko-KR", { 
+    year: "numeric", 
+    month: "long", 
+    day: "numeric" 
+  });
+}
+
+async function deleteProject(formData: FormData) {
+  "use server";
+  const projectId = formData.get("project-id");
+  const action = formData.get("action");
+  
+  if (action !== "delete" || !projectId) return;
+  
+  if (supabase) {
+    await supabase.from("projects").delete().eq("id", projectId as string);
+  }
+}
+
 export default async function ProjectsPage() {
   let projects = getProjects();
 
@@ -13,7 +44,7 @@ export default async function ProjectsPage() {
       .from("projects")
       .select("*")
       .order("created_at", { ascending: false });
-    
+
     if (data) {
       // Convert Supabase data to CardSectionItem format
       const dbProjects = data.map(p => ({
@@ -23,9 +54,10 @@ export default async function ProjectsPage() {
         href: `/projects/${p.id}`,
         status: p.status,
         author: p.author,
-        tags: p.tags
+        tags: p.tags,
+        created_at: p.created_at
       }));
-      
+
       // Combine with mock projects (optional, or just use DB)
       projects = dbProjects;
     }
@@ -42,6 +74,8 @@ export default async function ProjectsPage() {
         title="진행 중인 프로젝트"
         description="각 빌더가 만들고 있는 프로젝트와 현재 상태를 빠르게 훑어봅니다."
         items={projects}
+        formatCreatedAt={formatTimeAgo}
+        deleteAction={deleteProject}
       />
     </AppShell>
   );
