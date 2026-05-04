@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { StatusBadge } from "@/components/status/StatusBadge";
 import { TagList } from "@/components/tags/TagList";
-import { ArrowRight } from "lucide-react";
 import styles from "./ContentCard.module.css";
 
 type ContentCardProps = {
@@ -46,10 +45,6 @@ export function ContentCard({ title, summary, href, status, author, tags = [], c
         ) : (
           <span />
         )}
-        <span className={styles["view-more"]}>
-          자세히 보기
-          <ArrowRight size={16} />
-        </span>
       </div>
     </article>
   );
