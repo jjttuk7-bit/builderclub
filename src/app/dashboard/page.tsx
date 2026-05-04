@@ -89,7 +89,26 @@ export default async function DashboardPage() {
                 author={activity.author}
                 tags={activity.tags}
                 createdAt={formatCreatedAt(activity.created_at)}
-                onDelete={activity.id?.startsWith("activity-p-") ? deleteProject : undefined}
+                onDelete={activity.id?.startsWith("activity-p-") ? (e) => {
+                  e.preventDefault();
+                  if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+                    const form = document.createElement("form");
+                    form.method = "POST";
+                    form.action = window.location.pathname;
+                    const actionInput = document.createElement("input");
+                    actionInput.type = "hidden";
+                    actionInput.name = "action";
+                    actionInput.value = "delete";
+                    form.appendChild(actionInput);
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = "project-id";
+                    input.value = activity.id.replace("activity-p-", "");
+                    form.appendChild(input);
+                    document.body.appendChild(form);
+                    form.submit();
+                  }
+                } : undefined}
               />
             ))
           ) : (
