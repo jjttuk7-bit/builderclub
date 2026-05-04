@@ -32,22 +32,26 @@ export function CardSection({ title, description, items, formatCreatedAt, delete
             author={item.author}
             tags={item.tags}
             createdAt={formatCreatedAt ? formatCreatedAt(item.created_at) : undefined}
-            onDelete={deleteAction ? () => {
-              const form = document.createElement("form");
-              form.method = "POST";
-              form.action = window.location.pathname;
-              const actionInput = document.createElement("input");
-              actionInput.type = "hidden";
-              actionInput.name = "action";
-              actionInput.value = "delete";
-              form.appendChild(actionInput);
-              const input = document.createElement("input");
-              input.type = "hidden";
-              input.name = "project-id";
-              input.value = item.id || "";
-              form.appendChild(input);
-              document.body.appendChild(form);
-              form.submit();
+            onDelete={deleteAction ? (e: React.MouseEvent<HTMLButtonElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+                const form = document.createElement("form");
+                form.method = "POST";
+                form.action = window.location.pathname;
+                const actionInput = document.createElement("input");
+                actionInput.type = "hidden";
+                actionInput.name = "action";
+                actionInput.value = "delete";
+                form.appendChild(actionInput);
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "project-id";
+                input.value = item.id || "";
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+              }
             } : undefined}
           />
         ))}
