@@ -35,7 +35,7 @@ export function ContentCard({ title, summary, href, status, author, tags = [], c
               e.preventDefault();
               e.stopPropagation();
               if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
-                onDelete();
+                onDelete(e);
               }
             }}
             className={styles["delete-button"]}
