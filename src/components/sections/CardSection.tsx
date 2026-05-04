@@ -1,5 +1,6 @@
 import { ContentCard } from "@/components/cards/ContentCard";
 import styles from "./CardSection.module.css";
+import { useActionState } from "react";
 
 import type { CardSectionItem } from "@/lib/mock-db";
 
@@ -34,7 +35,12 @@ export function CardSection({ title, description, items, formatCreatedAt, delete
             onDelete={deleteAction ? () => {
               const form = document.createElement("form");
               form.method = "POST";
-              form.action = deleteAction;
+              form.action = window.location.pathname;
+              const actionInput = document.createElement("input");
+              actionInput.type = "hidden";
+              actionInput.name = "action";
+              actionInput.value = "delete";
+              form.appendChild(actionInput);
               const input = document.createElement("input");
               input.type = "hidden";
               input.name = "project-id";
