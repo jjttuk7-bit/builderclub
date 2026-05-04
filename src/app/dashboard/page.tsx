@@ -6,6 +6,37 @@ import { getActivityFeed } from "@/lib/mock-db";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 
+function formatCreatedAt(createdAt?: string): string {
+  if (!createdAt) return "";
+  const date = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffSec = Math.floor(diffMs / 1000);
+  const diffMin = Math.floor(diffSec / 60);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
+
+  if (diffSec < 60) return "방금 전";
+  if (diffMin < 60) return `${diffMin}분 전`;
+  if (diffHour < 24) return `${diffHour}시간 전`;
+  if (diffDay < 7) return `${diffDay}일 전`;
+  
+  return date.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+}
+
+async function deleteProject(formData: FormData) {
+  "use server";
+  const projectId = formData.get("project-id") as string;
+  
+  if (supabase && projectId) {
+    await supabase.from("projects").delete().eq("id", projectId);
+  }
+}
+
 export default async function DashboardPage() {
   let activities = [...getActivityFeed()];
 
@@ -19,12 +50,13 @@ export default async function DashboardPage() {
     if (projects) {
       const projectActivities = projects.map(p => ({
         id: `activity-p-${p.id}`,
-        title: `${p.author}님이 새 프로젝트를 시작했습니다: ${p.title}`,
-        summary: p.summary,
+        title: p.title,
+        summary: p.summary || "",
         href: `/projects/${p.id}`,
         status: p.status,
         author: p.author,
-        tags: p.tags
+        tags: p.tags || [],
+        created_at: p.created_at
       }));
       
       activities = [...projectActivities, ...activities];
@@ -56,6 +88,8 @@ export default async function DashboardPage() {
                 status={activity.status}
                 author={activity.author}
                 tags={activity.tags}
+                createdAt={formatCreatedAt(activity.created_at)}
+                onDelete={activity.id?.startsWith("activity-p-") ? deleteProject : undefined}
               />
             ))
           ) : (
