@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { currentBuilder } from "@/data/current-builder";
 import styles from "./WriteForm.module.css";
 
@@ -18,7 +21,27 @@ type WriteFormProps = {
 };
 
 export function WriteForm({ title, description, fields, submitLabel, action, builderName }: WriteFormProps) {
-  const displayName = builderName ?? currentBuilder.name;
+  const [displayName, setDisplayName] = useState(builderName ?? currentBuilder.name);
+
+  useEffect(() => {
+    async function loadSession() {
+      try {
+        const response = await fetch("/api/session");
+        if (response.ok) {
+          const data = await response.json();
+          if (data?.name) {
+            setDisplayName(data.name);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    }
+    if (!builderName) {
+      loadSession();
+    }
+  }, [builderName]);
+
   return (
     <form className={styles.form} action={action}>
       <header className={styles.header}>
