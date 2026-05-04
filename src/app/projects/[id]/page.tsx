@@ -9,9 +9,9 @@ import styles from "./page.module.css";
 
 export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  let project = getProjectById(id);
+  let project: any = null;
 
-  if (!project && supabase) {
+  if (supabase) {
     const { data } = await supabase
       .from("projects")
       .select("*")
@@ -20,6 +20,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
     if (data) {
       project = data;
     }
+  }
+
+  if (!project) {
+    project = getProjectById(id);
   }
 
   if (!project) {

@@ -294,6 +294,8 @@ export async function createProjectToSupabase(payload: {
         status: data.status,
         author: data.author,
         tags: data.tags,
+        problem_definition: data.problem_definition,
+        core_features: data.core_features,
       };
       sampleProjects.unshift(item);
       return item;
