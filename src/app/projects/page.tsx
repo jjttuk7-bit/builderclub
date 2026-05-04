@@ -57,9 +57,9 @@ export default async function ProjectsPage() {
         tags: p.tags,
         created_at: p.created_at
       }));
-
-      // Combine with mock projects (optional, or just use DB)
-      projects = dbProjects;
+      
+      // Combine with mock projects
+      projects = [...dbProjects, ...projects.filter(p => !dbProjects.some(dbP => dbP.title === p.title))];
     }
   }
 

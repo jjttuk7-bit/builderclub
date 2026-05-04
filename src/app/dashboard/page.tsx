@@ -2,7 +2,10 @@ export const dynamic = "force-dynamic";
 import { ContentCard } from "@/components/cards/ContentCard";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { CardSection } from "@/components/sections/CardSection";
 import { getActivityFeed } from "@/lib/mock-db";
+import { getProjectsByBuilderName } from "@/lib/mock-db";
+import { getSessionBuilder } from "@/lib/auth";
 import { supabase } from "@/lib/supabase";
 import styles from "./page.module.css";
 
@@ -38,7 +41,13 @@ async function deleteProject(formData: FormData) {
 }
 
 export default async function DashboardPage() {
+  const builder = await getSessionBuilder();
   let activities = [...getActivityFeed()];
+  let myProjects: any[] = [];
+
+  if (builder) {
+    myProjects = getProjectsByBuilderName(builder.name);
+  }
 
   if (supabase) {
     try {
@@ -62,7 +71,23 @@ export default async function DashboardPage() {
           created_at: p.created_at
         }));
         
-        activities = [...projectActivities, ...activities];
+        // 활동 내역 병합 (중복 방지)
+        activities = [...projectActivities, ...activities.filter(a => !projectActivities.some(pa => pa.href === a.href))];
+
+        // 내 프로젝트 병합
+        if (builder) {
+          const myDbProjects = projects.filter(p => p.builder_id === builder.id || p.author === builder.name).map(p => ({
+            id: p.id,
+            title: p.title,
+            summary: p.summary || "",
+            href: `/projects/${p.id}`,
+            status: p.status,
+            author: p.author,
+            tags: p.tags || [],
+            created_at: p.created_at
+          }));
+          myProjects = [...myDbProjects, ...myProjects.filter(p => !myDbProjects.some(mdb => mdb.title === p.title))];
+        }
       }
     } catch (err) {
       console.error("Dashboard data loading error:", err);
@@ -77,6 +102,17 @@ export default async function DashboardPage() {
         title="빌더클럽 대시보드"
         description="빌더들의 기록, 질문, 피드백, 지식 공유가 모이는 전체 커뮤니티 활동 화면입니다."
       />
+
+      {builder && myProjects.length > 0 && (
+        <div style={{ marginBottom: '3rem' }}>
+          <CardSection
+            title="내 프로젝트"
+            description="내가 현재 진행 중인 프로젝트들입니다."
+            items={myProjects}
+          />
+        </div>
+      )}
+
       <section className={styles.activitySection} aria-labelledby="recent-activity-title">
         <div className={styles.sectionHeader}>
           <div>

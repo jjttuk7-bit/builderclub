@@ -50,7 +50,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
       <section className={styles.detailsPanel}>
         <div className={styles.detailItem}>
           <h4>문제 정의</h4>
-          <p>{project.problem_definition || project.problem || "작성된 내용이 없습니다."}</p>
+          <p>{project.problem_definition || project.problem || project.summary || "작성된 내용이 없습니다."}</p>
         </div>
         <div className={styles.detailItem}>
           <h4>핵심 기능</h4>
