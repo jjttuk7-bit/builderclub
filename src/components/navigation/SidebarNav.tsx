@@ -77,11 +77,12 @@ export function SidebarNav({ builder }: SidebarNavProps) {
       </section>
       <ul className={styles.list}>
         {primaryNavigation.map((item) => {
-          const active = isActivePath(pathname, item.href);
+          const href = item.label === "빌더룸" ? currentBuilder.workspaceHref : item.href;
+          const active = isActivePath(pathname, href);
           return (
-            <li key={item.href}>
+            <li key={item.label}>
               <Link
-                href={item.href}
+                href={href}
                 className={active ? styles.active : undefined}
                 aria-current={active ? "page" : undefined}
               >

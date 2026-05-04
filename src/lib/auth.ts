@@ -13,7 +13,7 @@ export type SessionBuilder = Builder & {
 export async function getSessionBuilder(): Promise<SessionBuilder | null> {
   try {
     const session = await getServerSession(authOptions);
-    const handle = (session?.user as any)?.handle;
+    const handle = (session as any)?.handle || (session?.user as any)?.handle;
     if (!handle) {
       return null;
     }

@@ -32,7 +32,7 @@ export const appRoutes = {
 
 export const primaryNavigation = [
   { label: "대시보드", href: appRoutes.dashboard },
-  { label: "빌더룸", href: appRoutes.builderRoom("builder-a") },
+  { label: "빌더룸", href: "/builders" },
   { label: "프로젝트", href: appRoutes.projects.index },
   { label: "빌드로그", href: appRoutes.logs.index },
   { label: "질문", href: appRoutes.questions.index },

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const emailPrefix = email.split("@")[0];
     const displayName = emailPrefix;
-    const handle = `${emailPrefix}-${Math.floor(Math.random() * 10000)}`;
+    const handle = emailPrefix.toLowerCase(); // Predictable handle
 
     const passwordHash = await bcrypt.hash(password, 10);
 
