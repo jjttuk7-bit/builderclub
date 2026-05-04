@@ -9,6 +9,7 @@ import {
   sampleQuestions,
   sampleLogs,
 } from "@/data/sample-content";
+import { supabase } from "@/lib/supabase";
 
 export type CardSectionItem = {
   id?: string;
