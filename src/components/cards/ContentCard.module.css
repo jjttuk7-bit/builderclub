@@ -1,9 +1,34 @@
 .card {
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255, 254, 250, 0.96);
-  padding: 18px;
-  box-shadow: var(--shadow);
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #3b82f6, #a855f7, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card:hover {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: translateY(-4px);
+  border-color: #bfdbfe;
+}
+
+.card:hover::before {
+  opacity: 1;
 }
 
 .meta {
@@ -11,30 +36,78 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .author {
-  color: var(--muted);
-  font-size: 0.82rem;
-  font-weight: 850;
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .card h2 {
-  margin: 0;
-  font-size: 1.15rem;
-  line-height: 1.25;
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 600;
 }
 
 .card h2 a {
-  color: var(--ink);
+  color: #111827;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .card h2 a:hover {
-  color: var(--green-dark);
+  color: #2563eb;
 }
 
 .card p {
-  margin: 10px 0 0;
-  color: var(--muted);
+  margin: 0 0 16px;
+  color: #4b5563;
+  line-height: 1.6;
+  font-size: 0.9375rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+  margin-top: auto;
+}
+
+.view-more {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2563eb;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-more:hover {
+  color: #1d4ed8;
+}
+
+.view-more svg {
+  transition: transform 0.2s ease;
+}
+
+.card:hover .view-more svg {
+  transform: translateX(4px);
 }
