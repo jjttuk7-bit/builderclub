@@ -49,6 +49,7 @@ export default async function BuilderRoomPage({ params }: BuilderRoomPageProps) 
       .eq("builder_id", builder.id)
       .order("created_at", { ascending: false });
     
+    if (dbProjects) {
       const dbMappedProjects = dbProjects.map(p => ({
         id: p.id,
         title: p.title,
