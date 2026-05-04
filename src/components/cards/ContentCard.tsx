@@ -26,7 +26,7 @@ export function ContentCard({ title, summary, href, status, author, tags = [], c
         <Link href={href}>{title}</Link>
       </h2>
       <p>{summary}</p>
-      <TagList tags={tags} />
+      <TagList tags={tags ?? []} />
       <div className={styles["card-footer"]}>
         {onDelete ? (
           <button

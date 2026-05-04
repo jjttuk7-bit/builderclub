@@ -1,11 +1,11 @@
 import styles from "./TagList.module.css";
 
 type TagListProps = {
-  tags: string[];
+  tags?: string[];
 };
 
-export function TagList({ tags }: TagListProps) {
-  if (tags.length === 0) {
+export function TagList({ tags = [] }: TagListProps) {
+  if (!tags || tags.length === 0) {
     return null;
   }
 
