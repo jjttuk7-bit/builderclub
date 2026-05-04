@@ -32,7 +32,7 @@ export function CardSection({ title, description, items, formatCreatedAt, delete
             author={item.author}
             tags={item.tags}
             createdAt={formatCreatedAt ? formatCreatedAt(item.created_at) : undefined}
-            onDelete={deleteAction ? (e: React.MouseEvent<HTMLButtonElement>) => {
+            onDelete={deleteAction && item.id ? (e: React.MouseEvent<HTMLButtonElement>) => {
               e.preventDefault();
               e.stopPropagation();
               if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
@@ -47,7 +47,7 @@ export function CardSection({ title, description, items, formatCreatedAt, delete
                 const input = document.createElement("input");
                 input.type = "hidden";
                 input.name = "project-id";
-                input.value = item.id || "";
+                input.value = item.id!.replace("activity-p-", "");
                 form.appendChild(input);
                 document.body.appendChild(form);
                 form.submit();
