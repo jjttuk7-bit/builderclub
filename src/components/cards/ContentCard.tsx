@@ -11,7 +11,7 @@ type ContentCardProps = {
   author?: string;
   tags?: string[];
   createdAt?: string;
-  onDelete?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onDelete?: () => void;
 };
 
 export function ContentCard({ title, summary, href, status, author, tags = [], createdAt, onDelete }: ContentCardProps) {
