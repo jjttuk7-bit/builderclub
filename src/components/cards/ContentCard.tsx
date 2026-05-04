@@ -11,14 +11,17 @@ type ContentCardProps = {
   status: string;
   author?: string;
   tags?: string[];
+  createdAt?: string;
+  onDelete?: () => void;
 };
 
-export function ContentCard({ title, summary, href, status, author, tags = [] }: ContentCardProps) {
+export function ContentCard({ title, summary, href, status, author, tags = [], createdAt, onDelete }: ContentCardProps) {
   return (
     <article className={styles.card}>
       <div className={styles.meta}>
         <StatusBadge status={status} />
         {author ? <span className={styles.author}>작성자: {author}</span> : null}
+        {createdAt && <span className={styles["created-at"]}>{createdAt}</span>}
       </div>
       <h2>
         <Link href={href}>{title}</Link>
@@ -26,7 +29,23 @@ export function ContentCard({ title, summary, href, status, author, tags = [] }:
       <p>{summary}</p>
       <TagList tags={tags} />
       <div className={styles["card-footer"]}>
-        <span />
+        {onDelete ? (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+                onDelete();
+              }
+            }}
+            className={styles["delete-button"]}
+          >
+            삭제하기
+          </button>
+        ) : (
+          <span />
+        )}
         <span className={styles["view-more"]}>
           자세히 보기
           <ArrowRight size={16} />

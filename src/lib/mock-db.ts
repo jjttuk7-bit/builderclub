@@ -23,6 +23,7 @@ export type CardSectionItem = {
   core_features?: string;
   problem?: string;
   features?: string;
+  created_at?: string;
 };
 
 // Explicit type alias for optional fields to avoid Required<> issues
@@ -275,6 +276,7 @@ export async function createProjectToSupabase(payload: {
   author: string;
 }) {
   const id = createId("project");
+  const createdAt = new Date().toISOString();
   
   if (supabase) {
     const { data, error } = await supabase
@@ -290,14 +292,12 @@ export async function createProjectToSupabase(payload: {
         author: payload.author,
         status: "building",
         tags: ["Project"],
-        created_at: new Date().toISOString(),
+        created_at: createdAt,
       }])
       .select()
       .single();
 
     if (!error && data) {
-      // Also add to activity feed in Supabase if you have one, 
-      // or at least keep the local mock updated for the current session
       const item: CardSectionItem = {
         id: data.id,
         title: data.title,
@@ -308,14 +308,14 @@ export async function createProjectToSupabase(payload: {
         tags: data.tags,
         problem_definition: data.problem_definition,
         core_features: data.core_features,
+        created_at: data.created_at,
       };
       sampleProjects.unshift(item);
       return item;
     }
   }
 
-  // Fallback to mock if Supabase fails or is not available
-  return createProject(payload);
+  return createProject(payload, createdAt);
 }
 
 export function createProject(payload: {
@@ -325,9 +325,10 @@ export function createProject(payload: {
   features: string;
   visibility: string;
   author?: string;
-}) {
+}, createdAt?: string) {
   const id = createId("project");
   const authorName = payload.author || currentBuilder.name;
+  const timestamp = createdAt || new Date().toISOString();
   const item: CardSectionItem = {
     id,
     title: payload.name,
@@ -338,6 +339,7 @@ export function createProject(payload: {
     tags: ["Project"],
     problem_definition: payload.problem,
     core_features: payload.features,
+    created_at: timestamp,
   };
 
   sampleProjects.unshift(item);
@@ -365,6 +367,33 @@ export function getProjectById(id: string) {
 export function getProjectsByBuilderName(name: string): CardSectionItem[] {
   return sampleProjects.filter((p) => p.author === name) as CardSectionItem[];
 }
+export function deleteProject(id: string): boolean {
+  const index = sampleProjects.findIndex(p => p.id === id);
+  if (index !== -1) {
+    sampleProjects.splice(index, 1);
+    return true;
+  }
+  return false;
+}
+
+export async function deleteProjectFromSupabase(id: string): Promise<boolean> {
+  if (!supabase) {
+    return deleteProject(id);
+  }
+  
+  const { error } = await supabase
+    .from("projects")
+    .delete()
+    .eq("id", id);
+  
+  if (!error) {
+    // Also remove from local mock for consistency
+    deleteProject(id);
+    return true;
+  }
+  return false;
+}
+
 
 export function getBuildLogs(): CardSectionItem[] {
   return sampleLogs as CardSectionItem[];
