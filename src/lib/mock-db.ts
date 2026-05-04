@@ -252,32 +252,85 @@ export function createKnowledgePost(payload: {
   return item;
 }
 
+export async function createProjectToSupabase(payload: {
+  name: string;
+  summary: string;
+  problem: string;
+  features: string;
+  visibility: string;
+  builder_id?: string;
+  author: string;
+}) {
+  const id = createId("project");
+  
+  if (supabase) {
+    const { data, error } = await supabase
+      .from("projects")
+      .insert([{
+        id,
+        title: payload.name,
+        summary: payload.summary,
+        problem_definition: payload.problem,
+        core_features: payload.features,
+        visibility: payload.visibility,
+        builder_id: payload.builder_id,
+        author: payload.author,
+        status: "building",
+        tags: ["Project"],
+        created_at: new Date().toISOString(),
+      }])
+      .select()
+      .single();
+
+    if (!error && data) {
+      // Also add to activity feed in Supabase if you have one, 
+      // or at least keep the local mock updated for the current session
+      const item: Required<CardSectionItem> = {
+        id: data.id,
+        title: data.title,
+        summary: data.summary,
+        href: `/projects/${data.id}`,
+        status: data.status,
+        author: data.author,
+        tags: data.tags,
+      };
+      sampleProjects.unshift(item);
+      return item;
+    }
+  }
+
+  // Fallback to mock if Supabase fails or is not available
+  return createProject(payload);
+}
+
 export function createProject(payload: {
   name: string;
   summary: string;
   problem: string;
   features: string;
   visibility: string;
+  author?: string;
 }) {
   const id = createId("project");
+  const authorName = payload.author || currentBuilder.name;
   const item: Required<CardSectionItem> = {
     id,
     title: payload.name,
     summary: payload.summary,
     href: `/projects/${id}`,
     status: "building",
-    author: currentBuilder.name,
+    author: authorName,
     tags: ["Project"],
   };
 
   sampleProjects.unshift(item);
   sampleActivities.unshift({
     id: createId("activity"),
-    title: `${currentBuilder.name}님이 새 프로젝트를 시작했습니다: ${payload.name}`,
+    title: `${authorName}님이 새 프로젝트를 시작했습니다: ${payload.name}`,
     summary: payload.summary,
     href: item.href,
     status: item.status,
-    author: currentBuilder.name,
+    author: authorName,
     tags: item.tags,
   });
 

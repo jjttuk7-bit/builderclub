@@ -7,13 +7,22 @@ import { createProject } from "@/lib/mock-db";
 
 async function createProjectAction(formData: FormData) {
   "use server";
+  const { getSessionBuilder } = await import("@/lib/auth");
+  const { createProjectToSupabase } = await import("@/lib/mock-db");
+  
+  const builder = await getSessionBuilder();
+  if (!builder) {
+    throw new Error("로그인이 필요합니다.");
+  }
 
-  const item = createProject({
+  const item = await createProjectToSupabase({
     name: String(formData.get("프로젝트-이름")),
     summary: String(formData.get("한-줄-요약")),
     problem: String(formData.get("문제-정의")),
     features: String(formData.get("핵심-기능")),
     visibility: String(formData.get("visibility")),
+    builder_id: builder.id,
+    author: builder.display_name,
   });
 
   redirect(`/projects/${item.id}`);
