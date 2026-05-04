@@ -8,31 +8,44 @@ import { supabase } from "@/lib/supabase";
 function formatTimeAgo(dateString?: string): string {
   if (!dateString) return "";
   
-  const date = new Date(dateString);
-  const now = new Date();
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
-  
-  if (diffInSeconds < 60) return "방금 전";
-  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
-  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
-  if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}일 전`;
-  
-  return date.toLocaleDateString("ko-KR", { 
-    year: "numeric", 
-    month: "long", 
-    day: "numeric" 
-  });
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "";
+    
+    const now = new Date();
+    const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+    
+    if (diffInSeconds < 60) return "방금 전";
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}분 전`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}시간 전`;
+    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}일 전`;
+    
+    return date.toLocaleDateString("ko-KR", { 
+      year: "numeric", 
+      month: "long", 
+      day: "numeric" 
+    });
+  } catch {
+    return "";
+  }
 }
 
 async function deleteProject(formData: FormData) {
   "use server";
-  const projectId = formData.get("project-id");
-  const action = formData.get("action");
-  
-  if (action !== "delete" || !projectId) return;
-  
-  if (supabase) {
-    await supabase.from("projects").delete().eq("id", projectId as string);
+  try {
+    const projectId = formData.get("project-id");
+    const action = formData.get("action");
+    
+    if (action !== "delete" || !projectId) return;
+    
+    if (supabase) {
+      const { error } = await supabase.from("projects").delete().eq("id", projectId as string);
+      if (error) {
+        console.error("Failed to delete project:", error);
+      }
+    }
+  } catch (error) {
+    console.error("Error in deleteProject:", error);
   }
 }
 
