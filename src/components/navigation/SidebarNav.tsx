@@ -77,7 +77,7 @@ export function SidebarNav({ builder }: SidebarNavProps) {
       </section>
       <ul className={styles.list}>
         {primaryNavigation.map((item) => {
-          const href = item.label === "빌더룸" ? currentBuilder.workspaceHref : item.href;
+          const href = (item.label === "빌더룸" ? currentBuilder.workspaceHref : item.href) || "/";
           const active = isActivePath(pathname, href);
           return (
             <li key={item.label}>
