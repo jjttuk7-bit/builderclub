@@ -2,10 +2,34 @@ import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
 import { getProjects } from "@/lib/mock-db";
+import { supabase } from "@/lib/supabase";
 
-const projects = getProjects();
+export default async function ProjectsPage() {
+  let projects = getProjects();
 
-export default function ProjectsPage() {
+  if (supabase) {
+    const { data } = await supabase
+      .from("projects")
+      .select("*")
+      .order("created_at", { ascending: false });
+    
+    if (data) {
+      // Convert Supabase data to CardSectionItem format
+      const dbProjects = data.map(p => ({
+        id: p.id,
+        title: p.title,
+        summary: p.summary,
+        href: `/projects/${p.id}`,
+        status: p.status,
+        author: p.author,
+        tags: p.tags
+      }));
+      
+      // Combine with mock projects (optional, or just use DB)
+      projects = dbProjects;
+    }
+  }
+
   return (
     <AppShell>
       <PageHeader
