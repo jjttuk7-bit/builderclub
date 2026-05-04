@@ -1,7 +1,7 @@
+"use client";
+
 import { ContentCard } from "@/components/cards/ContentCard";
 import styles from "./CardSection.module.css";
-import { useActionState } from "react";
-
 import type { CardSectionItem } from "@/lib/mock-db";
 
 type CardSectionProps = {
