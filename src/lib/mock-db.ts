@@ -19,6 +19,10 @@ export type CardSectionItem = {
   status: string;
   author?: string;
   tags?: string[];
+  problem_definition?: string;
+  core_features?: string;
+  problem?: string;
+  features?: string;
 };
 
 export type DetailRecord = {
@@ -324,6 +328,8 @@ export function createProject(payload: {
     status: "building",
     author: authorName,
     tags: ["Project"],
+    problem_definition: payload.problem,
+    core_features: payload.features,
   };
 
   sampleProjects.unshift(item);
