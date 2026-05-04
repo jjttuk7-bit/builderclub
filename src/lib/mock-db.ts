@@ -125,7 +125,7 @@ export function createQuestion(payload: {
 }) {
   const id = createId("question");
   const title = payload.situation.slice(0, 40) || "새 질문";
-  const item: Required<CardSectionItem> = {
+  const item: CardSectionItem = {
     id,
     title,
     summary: payload.symptom,
@@ -172,7 +172,7 @@ export function createFeedbackRequest(payload: {
 }) {
   const id = createId("feedback");
   const title = payload.screen || "새 피드백 요청";
-  const item: Required<CardSectionItem> = {
+  const item: CardSectionItem = {
     id,
     title,
     summary: payload.reviewFocus,
@@ -219,7 +219,7 @@ export function createKnowledgePost(payload: {
 }) {
   const id = createId("knowledge");
   const title = payload.coreContent.slice(0, 40) || "새 지식 공유";
-  const item: Required<CardSectionItem> = {
+  const item: CardSectionItem = {
     id,
     title,
     summary: payload.background,
@@ -290,7 +290,7 @@ export async function createProjectToSupabase(payload: {
     if (!error && data) {
       // Also add to activity feed in Supabase if you have one, 
       // or at least keep the local mock updated for the current session
-      const item: Required<CardSectionItem> = {
+      const item: CardSectionItem = {
         id: data.id,
         title: data.title,
         summary: data.summary,
@@ -320,7 +320,7 @@ export function createProject(payload: {
 }) {
   const id = createId("project");
   const authorName = payload.author || currentBuilder.name;
-  const item: Required<CardSectionItem> = {
+  const item: CardSectionItem = {
     id,
     title: payload.name,
     summary: payload.summary,
