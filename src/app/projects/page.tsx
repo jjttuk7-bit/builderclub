@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import { AppShell } from "@/components/layout/AppShell";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { CardSection } from "@/components/sections/CardSection";
-import { getProjects } from "@/lib/mock-db";
+import { getProjects, type CardSectionItem } from "@/lib/mock-db";
 import { supabase } from "@/lib/supabase";
 
 function formatTimeAgo(dateString?: string): string {
@@ -61,18 +61,28 @@ export default async function ProjectsPage() {
 
       if (error) {
         console.error("Supabase projects fetch error:", error);
-      } else if (data) {
+      } else if (data && Array.isArray(data)) {
         // Convert Supabase data to CardSectionItem format
-        const dbProjects = data.map(p => ({
-          id: p.id,
-          title: p.title,
-          summary: p.summary,
-          href: `/projects/${p.id}`,
-          status: p.status,
-          author: p.author,
-          tags: p.tags,
-          created_at: p.created_at
-        }));
+        const dbProjects: CardSectionItem[] = data
+          .filter(p => p && typeof p === 'object')
+          .map(p => {
+            try {
+              return {
+                id: String(p.id || ''),
+                title: String(p.title || 'Untitled'),
+                summary: String(p.summary || ''),
+                href: `/projects/${String(p.id || '')}`,
+                status: String(p.status || 'pending'),
+                author: String(p.author || 'Unknown'),
+                tags: Array.isArray(p.tags) ? p.tags : [],
+                created_at: String(p.created_at || '')
+              };
+            } catch (err) {
+              console.error("Error mapping project:", err, p);
+              return null as any;
+            }
+          })
+          .filter((p): p is CardSectionItem => p !== null && p.id !== '');
         
         // Combine with mock projects
         projects = [...dbProjects, ...projects.filter(p => !dbProjects.some(dbP => dbP.title === p.title))];
